@@ -1,4 +1,4 @@
 [submodule "lib/JUCE"]
-	url = https://github.com/juce-framework/JUCE
+	url = https://github.com/ffAudio/foleys_gui_magic/commit/b48f8ddb406ed59d58c11b830ff7e932102d1b68
 [submodule "lib/foleys_gui_magic"]
 	url = https://github.com/ffAudio/foleys_gui_magic
