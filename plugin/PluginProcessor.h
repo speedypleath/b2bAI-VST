@@ -59,7 +59,6 @@ private:
     juce::dsp::Oscillator<float> vfoOSC;
 
     juce::AudioProcessorValueTreeState treeState;
-
     // MAGIC GUI: this is a shorthand where the samples to display are fed to
     foleys::MagicPlotSource*    oscilloscope = nullptr;
 

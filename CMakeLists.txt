@@ -12,9 +12,6 @@ set(CMAKE_OSX_ARCHITECTURES arm64;x86_64)
 add_subdirectory(lib/JUCE EXCLUDE_FROM_ALL)
 
 juce_add_module(lib/foleys_gui_magic)
-juce_add_binary_data(${PROJECT_NAME}_data
-        SOURCES
-        ${CMAKE_SOURCE_DIR}/res/magic.xml)
 
 set_property(GLOBAL PROPERTY JUCE_COPY_PLUGIN_AFTER_BUILD TRUE)
 

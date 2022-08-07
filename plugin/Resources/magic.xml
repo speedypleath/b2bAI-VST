@@ -44,5 +44,9 @@
                 <Slider caption="Level" parameter="vfolevel"/>
             </View>
         </View>
+        <KeyboardComponent orientation="vertical-right"/>
+    </View>
+    <View>
+        <KeyboardComponent flex-grow="0.7" margin="" padding="" border="" parameter="keyboard" />
     </View>
 </magic>

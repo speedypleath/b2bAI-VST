@@ -59,6 +59,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
                    std::make_unique<juce::AudioParameterFloat>(IDs::vfoFreq, "Frequency", juce::NormalisableRange<float>(0.5f, 10.0f), 2.0f),
                    std::make_unique<juce::AudioParameterFloat>(IDs::vfoLevel, "Level", juce::NormalisableRange<float>(0.0f, 1.0), 0.0f));
 
+    auto keyboardState = std::make_unique<juce::MidiKeyboardState>();
+    auto midiKeyboard = std::make_unique<juce::MidiKeyboardComponent>(*keyboardState, MidiKeyboardComponent::Orientation::verticalKeyboardFacingRight);
+    midiKeyboard->setOrientation(MidiKeyboardComponent::Orientation::verticalKeyboardFacingRight);
     layout.add (std::move (generator),
                 std::move (lfo),
                 std::move (vfo));
@@ -74,21 +77,25 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 {
     FOLEYS_SET_SOURCE_PATH (__FILE__);
 
+    auto file = juce::File::getSpecialLocation (juce::File::currentApplicationFile)
+            .getChildFile ("Contents")
+            .getChildFile ("Resources")
+            .getChildFile ("magic.xml");
+
+    if (file.existsAsFile())
+        magicState.setGuiValueTree (file);
+    else
+        magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
+
     frequency = treeState.getRawParameterValue (IDs::mainFreq);
-    jassert (frequency != nullptr);
     level = treeState.getRawParameterValue (IDs::mainLevel);
-    jassert (level != nullptr);
 
     lfoFrequency = treeState.getRawParameterValue (IDs::lfoFreq);
-    jassert (lfoFrequency != nullptr);
     lfoLevel = treeState.getRawParameterValue (IDs::lfoLevel);
-    jassert (lfoLevel != nullptr);
 
     vfoFrequency = treeState.getRawParameterValue (IDs::vfoFreq);
-    jassert (vfoFrequency != nullptr);
     vfoLevel = treeState.getRawParameterValue (IDs::vfoLevel);
-    jassert (vfoLevel != nullptr);
-
+    magicState.getPropertyAsValue("orientation").setValue("vertical-left");
     treeState.addParameterListener (IDs::mainType, this);
     treeState.addParameterListener (IDs::lfoType, this);
     treeState.addParameterListener (IDs::vfoType, this);
@@ -98,12 +105,13 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     //            And we are only interested in channel 0
     oscilloscope = magicState.createAndAddObject<foleys::MagicOscilloscope>(IDs::oscilloscope, 0);
 
-    magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
+    magicState.setApplicationSettingsFile (juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
+                                                   .getChildFile (ProjectInfo::companyName)
+                                                   .getChildFile (ProjectInfo::projectName + juce::String (".settings")));
 }
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
-{
-}
+= default;
 
 //==============================================================================
 
