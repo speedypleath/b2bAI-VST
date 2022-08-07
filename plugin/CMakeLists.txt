@@ -19,9 +19,7 @@ juce_add_binary_data(${PROJECT_NAME}_data
 juce_generate_juce_header(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME} PRIVATE
-        PluginEditor.cpp
         PluginProcessor.cpp
-        PluginEditor.h
         PluginProcessor.h
         KeyboardComponent.cpp
         KeyboardComponent.h
@@ -29,6 +27,7 @@ target_sources(${PROJECT_NAME} PRIVATE
         PianoRollComponent.h
         GridComponent.cpp
         GridComponent.h
+        Constants.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

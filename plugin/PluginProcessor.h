@@ -63,4 +63,6 @@ private:
     foleys::MagicPlotSource*    oscilloscope = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)
+
+    void initialiseBuilder(foleys::MagicGUIBuilder &builder) override;
 };

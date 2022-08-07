@@ -6,5 +6,12 @@
 #include "JuceHeader.h"
 
 class GridComponent: public Component {
+private:
+    OwnedArray<Range<float>> noteLineRanges;
+public:
+    GridComponent();
 
+    void updateNoteLineRanges(float firstKeyStartPosition);
+
+    void paint(Graphics &g) override;
 };

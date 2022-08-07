@@ -3,6 +3,7 @@
 //
 
 #include "PluginProcessor.h"
+#include "PianoRollComponent.h"
 
 //==============================================================================
 
@@ -112,6 +113,13 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
 = default;
+
+void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
+{
+    builder.registerJUCEFactories();
+
+    builder.registerFactory ("PianoRoll", &PianoRollItem::factory);
+}
 
 //==============================================================================
 
