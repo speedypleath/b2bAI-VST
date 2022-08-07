@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<magic>
+    <Styles>
+        <Style name="default">
+            <Nodes/>
+            <Classes>
+                <group border="2" flex-direction="column" padding="1"/>
+            </Classes>
+            <Types>
+                <Slider border="0"/>
+                <ToggleButton border="0" max-height="50" caption-size="0"/>
+                <TextButton border="0" max-height="50" caption-size="0"/>
+                <ComboBox border="0" max-height="50" caption-size="0"/>
+                <Plot border="0" margin="0" padding="0" background-color="00000000"/>
+            </Types>
+            <Palettes>
+                <default/>
+            </Palettes>
+        </Style>
+    </Styles>
+    <View id="root" flex-direction="column" resizable="1" resize-corner="1">
+        <View border="2" background-color="black">
+            <Plot source="oscilloscope" plot-color="orange"/>
+        </View>
+        <View margin="0" padding="0">
+            <View caption="Generator" class="group">
+                <View>
+                    <ToggleButton text="Sine" button-radio-group="1" parameter="mainType" button-radio-value="1"/>
+                    <ToggleButton text="Triangle" button-radio-group="1" parameter="mainType" button-radio-value="2"/>
+                    <ToggleButton text="Square" button-radio-group="1" parameter="mainType" button-radio-value="3"/>
+                </View>
+                <Slider caption="Frequency" parameter="mainfreq"/>
+                <Slider caption="Level" parameter="mainlevel"/>
+            </View>
+            <View caption="LFO" class="group">
+                <ComboBox caption="LFO-Type" parameter="lfoType"/>
+                <Slider caption="Frequency" parameter="lfofreq"/>
+                <Slider caption="Level" parameter="lfolevel"/>
+            </View>
+            <View caption="VFO" class="group">
+                <ComboBox caption="VFO-Type" parameter="vfoType"/>
+                <Slider caption="Frequency" parameter="vfofreq"/>
+                <Slider caption="Level" parameter="vfolevel"/>
+            </View>
+        </View>
+    </View>
+</magic>
