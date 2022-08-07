@@ -29,8 +29,7 @@ void GridComponent::paint(Graphics& g)
 
     // Draw note lines
     g.setColour(Colours::grey);
-    for (int i = 0; i < noteLineRanges.size(); ++i)
-    {
+    for (int i = 0; i < noteLineRanges.size(); ++i) {
         auto rect = Rectangle<float>(0, noteLineRanges[i]->getStart(), static_cast<float>(getWidth()), noteLineRanges[i]->getLength());
         if (rect.getBottom() < 0 || rect.getY() >= static_cast<float>(getHeight())) // skip if the line is out of bounds
             continue;
@@ -38,5 +37,12 @@ void GridComponent::paint(Graphics& g)
         if (!MidiMessage::isMidiNoteBlack(i))
             continue;
         g.fillRect(rect);
+    }
+
+    int width = getWidth();
+
+    for (int i = 0; i < width; i += width / 32) {
+        g.setColour(Colours::white);
+        g.fillRect(i, 0, 1, getHeight());
     }
 }
