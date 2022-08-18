@@ -18,21 +18,26 @@ juce_add_binary_data(${PROJECT_NAME}_data
 
 juce_generate_juce_header(${PROJECT_NAME})
 
-target_sources(${PROJECT_NAME} PRIVATE
-        PluginProcessor.cpp
-        PluginProcessor.h
-        KeyboardComponent.cpp
-        KeyboardComponent.h
-        PianoRollComponent.cpp
-        PianoRollComponent.h
-        GridComponent.cpp
-        GridComponent.h
+set(B2BAI_SOURCES
         Constants.h
-)
+        PluginProcessor.h
+        PluginProcessor.cpp
+        KeyboardComponent.h
+        KeyboardComponent.cpp
+        GridComponent.h
+        GridComponent.cpp
+        PianoRollComponent.h
+        PianoRollComponent.cpp
+        MIDIClip.cpp
+        MIDIClip.h
+        )
+
+target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${B2BAI_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/lib/JUCE/modules)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/VST/lib)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/VST/lib/JUCE/modules)
 
 target_compile_definitions(${PROJECT_NAME}
         PUBLIC

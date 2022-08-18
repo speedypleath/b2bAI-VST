@@ -8,6 +8,7 @@
 class GridComponent: public Component {
 private:
     OwnedArray<Range<float>> noteLineRanges;
+    OwnedArray<Range<float>> noteRowRanges;
 public:
     GridComponent();
 
