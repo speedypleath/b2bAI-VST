@@ -15,9 +15,12 @@ MIDIFileListBox::MIDIFileListBox() {
     midiFiles.add(midiFilesDir.getParentDirectory());
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, "*"));
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, "*.mid"));
+    settings->addChangeListener(this);
 }
 
-MIDIFileListBox::~MIDIFileListBox() = default;
+MIDIFileListBox::~MIDIFileListBox() {
+    settings->removeChangeListener (this);
+}
 
 void MIDIFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event) {
     if (event.mods.isPopupMenu())
@@ -42,6 +45,8 @@ void MIDIFileListBox::paintListBoxItem(int rowNumber, Graphics &g, int width, in
         g.fillRect (bounds);
     }
 
+    bounds = juce::Rectangle<int> (5, 2, width, height);
+
     g.setColour (juce::Colours::silver);
 
     g.drawFittedText (midiFiles[rowNumber] != midiFilesDir.getParentDirectory() ? midiFiles[rowNumber].getFileName() : "..", bounds, juce::Justification::centredLeft, 1);
@@ -51,11 +56,12 @@ int MIDIFileListBox::getNumRows() {
     return midiFilesDir.getNumberOfChildFiles(File::findFiles, "*.mid") + midiFilesDir.getNumberOfChildFiles(File::findDirectories, "*") + 1;
 }
 
-void MIDIFileListBox::setFileDir(File file) {
-    midiFilesDir = std::move(file);
+void MIDIFileListBox::changeListenerCallback(juce::ChangeBroadcaster *) {
+    midiFilesDir = File(settings->settings.getProperty("path"));
     std::cout << midiFilesDir.getFullPathName() << std::endl;
     midiFiles = {};
     midiFiles.add(midiFilesDir.getParentDirectory());
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, "*"));
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, "*.mid"));
+    sendChangeMessage();
 }

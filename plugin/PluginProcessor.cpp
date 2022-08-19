@@ -37,7 +37,6 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
         magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
 
     midiFileListBox = magicState.createAndAddObject<MIDIFileListBox>("midi_files");
-
     midiFileListBox->onSelectionChanged = [&](int number) {
         loadMidiFile(number);
     };
@@ -136,12 +135,10 @@ void B2bAIAudioProcessor::saveMidiFile() {
             .getChildFile("midi_files");
 
     midiFilesDir.getChildFile("Midi " + juce::String (midiFileListBox->getNumRows() + 1) + ".mid").create();
-    midiFileListBox->setFileDir(midiFilesDir);
+    magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 }
 
 void B2bAIAudioProcessor::loadMidiFile(int number) {
-
-
     if(number == 0)
         midiFilesDir = midiFilesDir.getParentDirectory();
     else {
@@ -154,7 +151,7 @@ void B2bAIAudioProcessor::loadMidiFile(int number) {
         number -= directories.size();
         auto midiFiles = midiFilesDir.findChildFiles(File::findFiles, false, "*.mid");
     }
-    midiFileListBox->setFileDir(midiFilesDir);
+    magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 }
 
 //==============================================================================

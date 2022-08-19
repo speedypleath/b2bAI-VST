@@ -5,10 +5,13 @@
 #include "JuceHeader.h"
 #pragma once
 
-class MIDIFileListBox: public ListBoxModel {
+class MIDIFileListBox: public ListBoxModel,
+                       public ChangeBroadcaster,
+                       public ChangeListener{
 private:
     File midiFilesDir;
     Array<File> midiFiles;
+    foleys::SharedApplicationSettings settings;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDIFileListBox)
 public:
@@ -19,6 +22,6 @@ public:
     void paintListBoxItem (int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected) override;
 
     int getNumRows() override;
-    void setFileDir(File file);
+    void changeListenerCallback (juce::ChangeBroadcaster*) override;
     std::function<void(int rowNumber)> onSelectionChanged;
 };
