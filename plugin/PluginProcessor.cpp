@@ -9,17 +9,10 @@
 
 namespace IDs
 {
-    static juce::String mainType  { "mainType" };
-    static juce::String mainFreq  { "mainfreq" };
-    static juce::String mainLevel { "mainlevel" };
-    static juce::String lfoType   { "lfoType" };
-    static juce::String lfoFreq   { "lfofreq" };
-    static juce::String lfoLevel  { "lfolevel" };
-    static juce::String vfoType   { "vfoType" };
-    static juce::String vfoFreq   { "vfofreq" };
-    static juce::String vfoLevel  { "vfolevel" };
-
-    static juce::Identifier oscilloscope { "oscilloscope" };
+    static String paramSyncopation {"syncopation" };
+    static String paramDensity { "note density" };
+    static String paramBars { "number of bars" };
+    static String paramScale { "scale" };
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
@@ -29,13 +22,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
 
 //==============================================================================
 B2bAIAudioProcessor::B2bAIAudioProcessor()
-        : foleys::MagicProcessor (juce::AudioProcessor::BusesProperties()
-                                          .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-          treeState (*this, nullptr, "PARAMETERS", createParameterLayout())
+        : treeState (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
     FOLEYS_SET_SOURCE_PATH (__FILE__);
 
-    auto file = juce::File::getSpecialLocation (juce::File::currentApplicationFile)
+    auto file = File::getSpecialLocation (File::currentApplicationFile)
             .getChildFile ("Contents")
             .getChildFile ("Resources")
             .getChildFile ("magic.xml");
@@ -45,10 +36,25 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     else
         magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
 
+    midiFileListBox = magicState.createAndAddObject<MIDIFileListBox>("midi_files");
+
+    midiFileListBox->onSelectionChanged = [&](int number) {
+        loadMidiFile(number);
+    };
+
+    magicState.addTrigger("save_file", [this] {
+        saveMidiFile();
+    });
 
     magicState.setApplicationSettingsFile (juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
                                                    .getChildFile (ProjectInfo::companyName)
                                                    .getChildFile (ProjectInfo::projectName + juce::String (".settings")));
+
+    midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
+            .getChildFile (ProjectInfo::companyName)
+            .getChildFile("midi_files");
+
+    magicState.setPlayheadUpdateFrequency (30);
 }
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
@@ -63,38 +69,8 @@ void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
 
 //==============================================================================
 
-void B2bAIAudioProcessor::setOscillator (juce::dsp::Oscillator<float>& osc, WaveType type)
-{
-    if (type == WaveType::Sine)
-        osc.initialise ([](auto in) { return std::sin (in); });
-    else if (type == WaveType::Triangle)
-        osc.initialise ([](auto in) { return in / juce::MathConstants<float>::pi; });
-    else if (type == WaveType::Square)
-        osc.initialise ([](auto in) { return in < 0 ? 1.0f : -1.0f; });
-    else
-        osc.initialise ([](auto) { return 0.0f; });
-}
+void B2bAIAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
 
-void B2bAIAudioProcessor::parameterChanged (const juce::String& param, float value)
-{
-
-}
-
-
-void B2bAIAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-
-    const auto numChannels = getTotalNumOutputChannels();
-
-    juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = juce::uint32 (samplesPerBlock);
-    spec.numChannels = juce::uint32 (numChannels);
-
-    // MAGIC GUI: this will setup all internals like MagicPlotSources etc.
-    magicState.prepareToPlay (sampleRate, samplesPerBlock);
 }
 
 void B2bAIAudioProcessor::releaseResources()
@@ -152,6 +128,33 @@ bool B2bAIAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 double B2bAIAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
+}
+
+void B2bAIAudioProcessor::saveMidiFile() {
+    midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
+            .getChildFile (ProjectInfo::companyName)
+            .getChildFile("midi_files");
+
+    midiFilesDir.getChildFile("Midi " + juce::String (midiFileListBox->getNumRows() + 1) + ".mid").create();
+    midiFileListBox->setFileDir(midiFilesDir);
+}
+
+void B2bAIAudioProcessor::loadMidiFile(int number) {
+
+
+    if(number == 0)
+        midiFilesDir = midiFilesDir.getParentDirectory();
+    else {
+        number -= 1;
+        auto directories = midiFilesDir.findChildFiles(File::findDirectories, false, "*");
+
+        if (number < directories.size())
+            midiFilesDir = directories[number];
+
+        number -= directories.size();
+        auto midiFiles = midiFilesDir.findChildFiles(File::findFiles, false, "*.mid");
+    }
+    midiFileListBox->setFileDir(midiFilesDir);
 }
 
 //==============================================================================

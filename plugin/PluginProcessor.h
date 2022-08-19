@@ -5,22 +5,13 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-
+#import "MIDIFileListBox.h"
 //==============================================================================
 /**
 */
-class B2bAIAudioProcessor  : public  foleys::MagicProcessor,
-                             private juce::AudioProcessorValueTreeState::Listener
+class B2bAIAudioProcessor  : public  foleys::MagicProcessor
 {
 public:
-    enum WaveType
-    {
-        None = 0,
-        Sine,
-        Triangle,
-        Square
-    };
-
     //==============================================================================
     B2bAIAudioProcessor();
     ~B2bAIAudioProcessor() override;
@@ -30,25 +21,21 @@ public:
     void releaseResources() override;
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const juce::AudioProcessor::BusesLayout& layouts) const override;
+    bool isBusesLayoutSupported (const AudioProcessor::BusesLayout& layouts) const override;
 #endif
-
-    void parameterChanged (const juce::String& param, float value) override;
-
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-
+    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    void saveMidiFile();
+    void loadMidiFile(int index);
     //==============================================================================
     double getTailLengthSeconds() const override;
 
 private:
     //==============================================================================
 
-    void setOscillator (juce::dsp::Oscillator<float>& osc, WaveType type);
-
-    juce::AudioProcessorValueTreeState treeState;
     // MAGIC GUI: this is a shorthand where the samples to display are fed to
-    foleys::MagicPlotSource*    oscilloscope = nullptr;
-
+    MIDIFileListBox *midiFileListBox;
+    File midiFilesDir;
+    AudioProcessorValueTreeState treeState;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)
 
     void initialiseBuilder(foleys::MagicGUIBuilder &builder) override;
