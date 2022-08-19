@@ -30,6 +30,8 @@ set(B2BAI_SOURCES
         PianoRollComponent.cpp
         MIDIClip.cpp
         MIDIClip.h
+        MIDIFileListBox.cpp
+        MIDIFileListBox.h
         )
 
 target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})

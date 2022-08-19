@@ -45,19 +45,6 @@ private:
 
     void setOscillator (juce::dsp::Oscillator<float>& osc, WaveType type);
 
-    std::atomic<float>* frequency  = nullptr;
-    std::atomic<float>* level      = nullptr;
-
-    std::atomic<float>* lfoFrequency  = nullptr;
-    std::atomic<float>* lfoLevel      = nullptr;
-
-    std::atomic<float>* vfoFrequency  = nullptr;
-    std::atomic<float>* vfoLevel      = nullptr;
-
-    juce::dsp::Oscillator<float> mainOSC;
-    juce::dsp::Oscillator<float> lfoOSC;
-    juce::dsp::Oscillator<float> vfoOSC;
-
     juce::AudioProcessorValueTreeState treeState;
     // MAGIC GUI: this is a shorthand where the samples to display are fed to
     foleys::MagicPlotSource*    oscilloscope = nullptr;
