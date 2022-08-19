@@ -63,44 +63,123 @@ void GridComponent::paint(Graphics& g)
         g.fillRect(static_cast<int>(noteRowRange->getStart()), 0, 1, height);
     }
 
-    g.setColour(Colours::green);
     // draw notes
+    g.setColour(Colours::green);
     for (auto note : notes) {
-        g.fillRect(*note);
+        if(pressed == note && getMouseCursor() == MouseCursor::DraggingHandCursor) {
+            g.fillRect(new_position.getX() - pressed.getWidth() / 2,
+                       new_position.getY() - pressed.getHeight() / 2,
+                       pressed.getWidth() + pressed.getWidth() / 8,
+                       pressed.getHeight() + pressed.getHeight() / 8);
+            continue;
+        }
+
+        g.fillRect(note);
     }
+}
+
+void GridComponent::mouseMove(const MouseEvent &event) {
+    auto cursor = find_note_rect(event.getPosition());
+    auto it = std::find(notes.begin(), notes.end(), cursor);
+    int x = event.getPosition().getX();
+
+    if(it == notes.end()) {
+        setMouseCursor(MouseCursor::NormalCursor);
+        return;
+    }
+
+    if(x < it->getX() + 5) {
+        setMouseCursor(MouseCursor::LeftEdgeResizeCursor);
+        return;
+    }
+
+    if(x > it->getRight() - 5) {
+        setMouseCursor(MouseCursor::RightEdgeResizeCursor);
+        return;
+    }
+
+    setMouseCursor(MouseCursor::PointingHandCursor);
 }
 
 void GridComponent::mouseDown(const MouseEvent &event) {
-    if(event.mouseWasClicked()) {
-        Point<int> position = event.getPosition();
-        Range<int> *x = nullptr, *y = nullptr;
-        for (auto range: noteRowRanges)
-            if (range->contains(position.getX()))
-                x = range;
+    pressed = find_note_rect(event.getPosition());
+    if(getMouseCursor() == MouseCursor::PointingHandCursor) {
+        new_position = event.getPosition();
+        setMouseCursor(MouseCursor::DraggingHandCursor);
+    }
+    auto found = std::find_if(notes.begin(), notes.end(), [this](auto a) {
+        return pressed.intersectRectangle(a);
+    });
 
-        for (auto range: noteLineRanges)
-            if (range->contains(position.getY()))
-                y = range;
+    if(event.mouseWasClicked() && event.mods.isRightButtonDown() && found != notes.end()) {
+        notes.erase(found);
+    }
+}
 
-        if (x == nullptr || y == nullptr)
-            return;
+void GridComponent::mouseDrag(const juce::MouseEvent &event) {
+    Rectangle<int> *it = &*std::find(notes.begin(), notes.end(), pressed);
+    if(event.mouseWasDraggedSinceMouseDown()) {
+        if(getMouseCursor() == MouseCursor::PointingHandCursor || getMouseCursor() == MouseCursor::DraggingHandCursor)
+            new_position = event.getPosition();
 
-        auto pressed = new Rectangle<int>(x->getStart(), y->getStart(), x->getLength(), y->getLength());
-        auto found = std::find_if(notes.begin(), notes.end(), [pressed](Rectangle<int> *a) {
-            return a->getX() == pressed->getX() && a->getY() == pressed->getY();
-        });
-        if(event.mods.isLeftButtonDown()) {
-            if (found == notes.end())
-                notes.add(pressed);
-            else {
-                std::cout << "already pressed";
-                delete pressed;
-            }
+        std::cout << "drag x" << event.getPosition().getX() << std::endl;
+
+        if(getMouseCursor() == MouseCursor::RightEdgeResizeCursor) {
+            it->setRight(event.getPosition().getX());
+            pressed = *it;
+            std::cout << "set right" <<std::endl;
         }
-        else{
-            if(found != notes.end())
-            notes.removeObject(*found);
+
+        if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor) {
+            it->setLeft(event.getPosition().getX());
+            pressed = *it;
+            std::cout << "set left" <<std::endl;
         }
     }
 }
 
+void GridComponent::mouseDoubleClick(const MouseEvent &event) {
+    auto it = std::find(notes.begin(), notes.end(), pressed);
+    if (it == notes.end())
+        notes.push_back(pressed);
+    else {
+        std::cout << "already pressed";
+    }
+    pressed = {};
+    new_position = {};
+}
+
+void GridComponent::mouseUp(const MouseEvent &event) {
+
+    if(event.mouseWasDraggedSinceMouseDown()) {
+        auto new_note = find_note_rect(new_position);
+        if(pressed != new_note && getMouseCursor() == MouseCursor::DraggingHandCursor) {
+            notes.remove(pressed);
+            notes.push_back(new_note);
+            pressed = {};
+            new_position = {};
+        }
+    }
+
+    if(event.getNumberOfClicks() == 1) {
+        pressed = {};
+        new_position = {};
+    }
+}
+
+Rectangle<int> GridComponent::find_note_rect(Point<int> position) {
+    Range<int> *x = nullptr, *y = nullptr;
+    for (auto range: noteRowRanges)
+        if (range->contains(position.getX()))
+            x = range;
+
+    for (auto range: noteLineRanges)
+        if (range->contains(position.getY()))
+            y = range;
+
+    if (x == nullptr || y == nullptr)
+        return { };
+
+
+    return {x->getStart(), y->getStart(), x->getLength(), y->getLength()};
+}
