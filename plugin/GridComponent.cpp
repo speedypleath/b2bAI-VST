@@ -18,6 +18,7 @@ GridComponent::GridComponent()
 
 void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
 {
+    std::cout << "update\n";
     for (int i = 0; i <= 127; i++)
     {
         noteLineRanges[i]->setStart(getHeight() - firstKeyStartPosition - (i + 1) * constants::noteLineWidth);
@@ -27,6 +28,14 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
     for (int i = 0; i <= 32; i++) {
         noteRowRanges[i]->setStart(getWidth() / 32 * i);
         noteRowRanges[i]->setLength(getWidth() / 32);
+    }
+
+    for (auto &note: notes) {
+        note.setBottom(noteLineRanges[note.getPitch()]->getStart());
+        note.setY(noteLineRanges[note.getPitch()]->getEnd());
+        note.setHeight(noteLineRanges[note.getPitch()]->getLength());
+        std::cout << note << std::endl;
+        std::cout << "Range: " << noteLineRanges[note.getPitch()]->getStart() << '-' << noteLineRanges[note.getPitch()]->getEnd();
     }
     repaint();
 }
@@ -65,9 +74,9 @@ void GridComponent::paint(Graphics& g)
 
     // draw notes
     g.setColour(Colours::green);
-    for (auto note : notes) {
+    for (const auto& note : notes) {
         if(pressed == note) {
-            g.fillRect(new_position.expanded(10));
+            g.fillRect(new_position.expanded(1));
             continue;
         }
 
@@ -120,7 +129,7 @@ void GridComponent::mouseDown(const MouseEvent &event) {
 
     pressed = *&*found;
 
-    new_position = Rectangle<int>(pressed);
+    new_position = pressed;
 }
 
 void GridComponent::mouseDrag(const juce::MouseEvent &event) {
@@ -136,7 +145,6 @@ void GridComponent::mouseDrag(const juce::MouseEvent &event) {
         if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor)
             new_position.setLeft(static_cast<int>(event.position.getX()));
 
-        std :: cout << new_position.toString() << std::endl;
     }
 }
 
@@ -158,14 +166,16 @@ void GridComponent::mouseUp(const MouseEvent &event) {
     if(getMouseCursor() == MouseCursor::NormalCursor && event.getNumberOfClicks() == 1) {
         pressed = {};
         new_position = {};
+        return;
     }
 
-    Rectangle<int> new_note;
+    Note new_note;
     if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor || getMouseCursor() == MouseCursor::RightEdgeResizeCursor)
         new_note = new_position;
 
     if(getMouseCursor() == MouseCursor::DraggingHandCursor) {
        new_note = find_note_rect(Point<int>(new_position.getTopLeft()));
+       new_note.setX(new_position.getX());
        new_note.setWidth(new_position.getWidth());
     }
 
@@ -173,19 +183,22 @@ void GridComponent::mouseUp(const MouseEvent &event) {
     notes.push_back(new_note);
 }
 
-Rectangle<int> GridComponent::find_note_rect(Point<int> position) {
+Note GridComponent::find_note_rect(Point<int> position) {
     Range<int> *x = nullptr, *y = nullptr;
     for (auto range: noteRowRanges)
         if (range->contains(position.getX()))
             x = range;
 
-    for (auto range: noteLineRanges)
-        if (range->contains(position.getY()))
-            y = range;
+    int index = 0;
+    for (int i = 0; i <= 127; i++)
+        if(noteLineRanges[i]->contains(position.getY())) {
+            y = noteLineRanges[i];
+            index = i;
+    }
 
     if (x == nullptr || y == nullptr)
         return { };
 
 
-    return {x->getStart(), y->getStart(), x->getLength(), y->getLength()};
+    return {x->getStart(), y->getStart(), x->getLength(), y->getLength(), index};
 }

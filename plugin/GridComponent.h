@@ -4,14 +4,15 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "MIDIClip.h"
 
 class GridComponent: public Component {
 private:
     OwnedArray<Range<int>> noteLineRanges;
     OwnedArray<Range<int>> noteRowRanges;
-    std::list<Rectangle<int>> notes;
-    Rectangle<int> pressed, new_position;
-    Rectangle<int> find_note_rect(Point<int> position);
+    std::list<Note> notes;
+    Note pressed, new_position;
+    Note find_note_rect(Point<int> position);
 public:
     GridComponent();
 
