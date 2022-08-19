@@ -20,7 +20,7 @@ void PianoRollComponent::mouseWheelMove(const juce::MouseEvent &event, const juc
 
     keyboardComponent->setLowestVisibleKeyFloat(keyboardComponent->getFirstKey() - amount * keyboardComponent->getKeyWidth());
 
-    gridComponent->updateNoteLineRanges(keyboardComponent->getKeyStartPosition(0));
+    gridComponent->updateNoteLineRanges(static_cast<int>(keyboardComponent->getKeyStartPosition(0)));
 }
 
 void PianoRollComponent::paint(Graphics &g) {
@@ -36,5 +36,5 @@ void PianoRollComponent::resized()
     auto r = getBounds();
     keyboardComponent->setBounds(r.removeFromLeft(50));
     gridComponent->setBounds(r);
-    gridComponent->updateNoteLineRanges(keyboardComponent->getKeyStartPosition(0));
+    gridComponent->updateNoteLineRanges(static_cast<int>(keyboardComponent->getKeyStartPosition(0)));
 }
