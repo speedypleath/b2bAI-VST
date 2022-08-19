@@ -10,8 +10,7 @@ private:
     OwnedArray<Range<int>> noteLineRanges;
     OwnedArray<Range<int>> noteRowRanges;
     std::list<Rectangle<int>> notes;
-    Rectangle<int> pressed;
-    Point<int> new_position;
+    Rectangle<int> pressed, new_position;
     Rectangle<int> find_note_rect(Point<int> position);
 public:
     GridComponent();

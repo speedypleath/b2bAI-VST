@@ -66,11 +66,8 @@ void GridComponent::paint(Graphics& g)
     // draw notes
     g.setColour(Colours::green);
     for (auto note : notes) {
-        if(pressed == note && getMouseCursor() == MouseCursor::DraggingHandCursor) {
-            g.fillRect(new_position.getX() - pressed.getWidth() / 2,
-                       new_position.getY() - pressed.getHeight() / 2,
-                       pressed.getWidth() + pressed.getWidth() / 8,
-                       pressed.getHeight() + pressed.getHeight() / 8);
+        if(pressed == note) {
+            g.fillRect(new_position.expanded(10));
             continue;
         }
 
@@ -80,7 +77,9 @@ void GridComponent::paint(Graphics& g)
 
 void GridComponent::mouseMove(const MouseEvent &event) {
     auto cursor = find_note_rect(event.getPosition());
-    auto it = std::find(notes.begin(), notes.end(), cursor);
+    auto it = std::find_if(notes.begin(), notes.end(), [cursor](auto a) {
+        return !cursor.getIntersection(a).isEmpty();
+    });
     int x = event.getPosition().getX();
 
     if(it == notes.end()) {
@@ -103,38 +102,41 @@ void GridComponent::mouseMove(const MouseEvent &event) {
 
 void GridComponent::mouseDown(const MouseEvent &event) {
     pressed = find_note_rect(event.getPosition());
-    if(getMouseCursor() == MouseCursor::PointingHandCursor) {
-        new_position = event.getPosition();
+
+    if(getMouseCursor() == MouseCursor::PointingHandCursor)
         setMouseCursor(MouseCursor::DraggingHandCursor);
-    }
+
     auto found = std::find_if(notes.begin(), notes.end(), [this](auto a) {
-        return pressed.intersectRectangle(a);
+        return !pressed.getIntersection(a).isEmpty();
     });
 
-    if(event.mouseWasClicked() && event.mods.isRightButtonDown() && found != notes.end()) {
+    if(found == notes.end())
+        return;
+
+    if(event.mods.isRightButtonDown()) {
         notes.erase(found);
+        return;
     }
+
+    pressed = *&*found;
+
+    new_position = Rectangle<int>(pressed);
 }
 
 void GridComponent::mouseDrag(const juce::MouseEvent &event) {
-    Rectangle<int> *it = &*std::find(notes.begin(), notes.end(), pressed);
     if(event.mouseWasDraggedSinceMouseDown()) {
-        if(getMouseCursor() == MouseCursor::PointingHandCursor || getMouseCursor() == MouseCursor::DraggingHandCursor)
-            new_position = event.getPosition();
-
-        std::cout << "drag x" << event.getPosition().getX() << std::endl;
-
-        if(getMouseCursor() == MouseCursor::RightEdgeResizeCursor) {
-            it->setRight(event.getPosition().getX());
-            pressed = *it;
-            std::cout << "set right" <<std::endl;
+        if(getMouseCursor() == MouseCursor::DraggingHandCursor) {
+            new_position.setX(static_cast<int>(event.position.getX()) - pressed.getWidth() / 2);
+            new_position.setY(static_cast<int>(event.position.getY()) - pressed.getHeight() / 2);
         }
 
-        if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor) {
-            it->setLeft(event.getPosition().getX());
-            pressed = *it;
-            std::cout << "set left" <<std::endl;
-        }
+        if(getMouseCursor() == MouseCursor::RightEdgeResizeCursor)
+            new_position.setRight(static_cast<int>(event.position.getX()));
+
+        if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor)
+            new_position.setLeft(static_cast<int>(event.position.getX()));
+
+        std :: cout << new_position.toString() << std::endl;
     }
 }
 
@@ -150,21 +152,25 @@ void GridComponent::mouseDoubleClick(const MouseEvent &event) {
 }
 
 void GridComponent::mouseUp(const MouseEvent &event) {
+    if(getMouseCursor() == MouseCursor::NormalCursor && event.getNumberOfClicks() > 1)
+        return;
 
-    if(event.mouseWasDraggedSinceMouseDown()) {
-        auto new_note = find_note_rect(new_position);
-        if(pressed != new_note && getMouseCursor() == MouseCursor::DraggingHandCursor) {
-            notes.remove(pressed);
-            notes.push_back(new_note);
-            pressed = {};
-            new_position = {};
-        }
-    }
-
-    if(event.getNumberOfClicks() == 1) {
+    if(getMouseCursor() == MouseCursor::NormalCursor && event.getNumberOfClicks() == 1) {
         pressed = {};
         new_position = {};
     }
+
+    Rectangle<int> new_note;
+    if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor || getMouseCursor() == MouseCursor::RightEdgeResizeCursor)
+        new_note = new_position;
+
+    if(getMouseCursor() == MouseCursor::DraggingHandCursor) {
+       new_note = find_note_rect(Point<int>(new_position.getTopLeft()));
+       new_note.setWidth(new_position.getWidth());
+    }
+
+    notes.remove(pressed);
+    notes.push_back(new_note);
 }
 
 Rectangle<int> GridComponent::find_note_rect(Point<int> position) {
