@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#import "MIDIFileListBox.h"
+#include "MIDIFileListBox.h"
 //==============================================================================
 /**
 */
@@ -25,18 +25,17 @@ public:
 #endif
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
     void saveMidiFile();
-    void loadMidiFile(int index);
+    void loadMidiFile(File file);
+    void loadDirectory(const File& file);
     //==============================================================================
     double getTailLengthSeconds() const override;
 
 private:
     //==============================================================================
-
-    // MAGIC GUI: this is a shorthand where the samples to display are fed to
     MIDIFileListBox *midiFileListBox;
     File midiFilesDir;
     AudioProcessorValueTreeState treeState;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)
-
+    File getFile(int index);
     void initialiseBuilder(foleys::MagicGUIBuilder &builder) override;
 };

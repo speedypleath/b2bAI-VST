@@ -22,20 +22,9 @@ MIDIFileListBox::~MIDIFileListBox() {
     settings->removeChangeListener (this);
 }
 
-void MIDIFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event) {
-    if (event.mods.isPopupMenu())
-    {
-        juce::PopupMenu::Options options;
-        juce::PopupMenu menu;
-        menu.addItem ("Remove", [this, rowNumber]()
-        {
-            midiFiles.remove(rowNumber);
-        });
-        menu.showMenuAsync (options);
-    }
-
-    if (onSelectionChanged)
-        onSelectionChanged (rowNumber);
+void MIDIFileListBox::listBoxItemDoubleClicked(int rowNumber, const MouseEvent &event) {
+    if (onDoubleClick)
+        onDoubleClick (midiFiles[rowNumber]);
 }
 void MIDIFileListBox::paintListBoxItem(int rowNumber, Graphics &g, int width, int height, bool rowIsSelected) {
     auto bounds = juce::Rectangle<int> (0, 0, width, height);
@@ -64,4 +53,22 @@ void MIDIFileListBox::changeListenerCallback(juce::ChangeBroadcaster *) {
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, "*"));
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, "*.mid"));
     sendChangeMessage();
+}
+
+void MIDIFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event) {
+    if (event.mods.isPopupMenu())
+    {
+        juce::PopupMenu::Options options;
+        juce::PopupMenu menu;
+        menu.addItem ("Remove", [this, rowNumber]()
+        {
+            File file = midiFiles[rowNumber];
+            file.isDirectory() ? file.deleteRecursively() : file.deleteFile();
+            midiFiles.remove(rowNumber);
+        });
+        menu.showMenuAsync (options);
+    }
+
+    if (onSelectionChanged)
+        onSelectionChanged (midiFiles[rowNumber]);
 }

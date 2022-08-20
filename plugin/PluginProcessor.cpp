@@ -3,6 +3,8 @@
 //
 
 #include "PluginProcessor.h"
+
+#include <utility>
 #include "PianoRollComponent.h"
 
 //==============================================================================
@@ -26,19 +28,23 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 {
     FOLEYS_SET_SOURCE_PATH (__FILE__);
 
-    auto file = File::getSpecialLocation (File::currentApplicationFile)
+    auto resFile = File::getSpecialLocation (File::currentApplicationFile)
             .getChildFile ("Contents")
             .getChildFile ("Resources")
             .getChildFile ("magic.xml");
 
-    if (file.existsAsFile())
-        magicState.setGuiValueTree (file);
+    if (resFile.existsAsFile())
+        magicState.setGuiValueTree (resFile);
     else
         magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
 
     midiFileListBox = magicState.createAndAddObject<MIDIFileListBox>("midi_files");
-    midiFileListBox->onSelectionChanged = [&](int number) {
-        loadMidiFile(number);
+    midiFileListBox->onSelectionChanged = [&](File file) {
+        loadMidiFile(std::move(file));
+    };
+
+    midiFileListBox->onDoubleClick = [&](const File& file) {
+        loadDirectory(file);
     };
 
     magicState.addTrigger("save_file", [this] {
@@ -130,28 +136,41 @@ double B2bAIAudioProcessor::getTailLengthSeconds() const
 }
 
 void B2bAIAudioProcessor::saveMidiFile() {
-    midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
-            .getChildFile (ProjectInfo::companyName)
-            .getChildFile("midi_files");
-
     midiFilesDir.getChildFile("Midi " + juce::String (midiFileListBox->getNumRows() + 1) + ".mid").create();
     magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 }
 
-void B2bAIAudioProcessor::loadMidiFile(int number) {
-    if(number == 0)
-        midiFilesDir = midiFilesDir.getParentDirectory();
+void B2bAIAudioProcessor::loadMidiFile(File file) {
+
+}
+
+void B2bAIAudioProcessor::loadDirectory(const File& file) {
+    std::cout << "Change directory: " << file.getFullPathName() << std::endl;
+    if(file.isDirectory()) {
+        magicState.getSettings().setProperty("path", file.getFullPathName(), nullptr);
+        std::cout << "Directory: " << file.getFullPathName() << std::endl;
+    }
+}
+
+File B2bAIAudioProcessor::getFile(int index) {
+    File file;
+    if(index == 0)
+        file = midiFilesDir.getParentDirectory();
     else {
-        number -= 1;
+        index -= 1;
         auto directories = midiFilesDir.findChildFiles(File::findDirectories, false, "*");
 
-        if (number < directories.size())
-            midiFilesDir = directories[number];
+        if (index < directories.size())
+            file = directories[index];
+        else {
+            index -= directories.size();
+            auto files = midiFilesDir.findChildFiles(File::findFiles, false, "*.mid");
 
-        number -= directories.size();
-        auto midiFiles = midiFilesDir.findChildFiles(File::findFiles, false, "*.mid");
+            file = files[index];
+        }
     }
-    magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
+
+    return file;
 }
 
 //==============================================================================

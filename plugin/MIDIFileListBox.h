@@ -19,9 +19,11 @@ public:
     ~MIDIFileListBox() override;
 
     void listBoxItemClicked (int rowNumber, const juce::MouseEvent& event) override;
+    void listBoxItemDoubleClicked(int row, const juce::MouseEvent &) override;
     void paintListBoxItem (int rowNumber, juce::Graphics &g, int width, int height, bool rowIsSelected) override;
 
     int getNumRows() override;
     void changeListenerCallback (juce::ChangeBroadcaster*) override;
-    std::function<void(int rowNumber)> onSelectionChanged;
+    std::function<void(File file)> onSelectionChanged;
+    std::function<void(File file)> onDoubleClick;
 };
