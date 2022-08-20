@@ -3,3 +3,12 @@
 //
 
 #include "MidiSequence.h"
+
+
+void MidiSequence::load() {
+
+}
+
+void MidiSequence::save(juce::File file) {
+
+}

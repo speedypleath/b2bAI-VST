@@ -25,4 +25,5 @@ public:
     void mouseDrag(const MouseEvent &event) override;
     void mouseDoubleClick(const MouseEvent &event) override;
     void mouseUp(const MouseEvent &event) override;
+    void setMidiSequence(MidiSequence sequence);
 };

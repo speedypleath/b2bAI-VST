@@ -6,9 +6,12 @@
 
 #include <utility>
 #include "PianoRollComponent.h"
+#include "MidiSequence.h"
 #include "SearchBar.h"
+#include "PianoRoll.h"
 
 //==============================================================================
+
 
 namespace IDs
 {
@@ -58,7 +61,7 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
             .getChildFile (ProjectInfo::companyName)
             .getChildFile("midi_files");
 
-    magicState.createAndAddObject<Array<NoteRectangle>>("sequence");
+    midiSequence = magicState.createAndAddObject<MidiSequence>("sequence");
 
     midiFileListBox = magicState.createAndAddObject<MidiFileListBox>("filetree");
 
@@ -96,7 +99,7 @@ void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
 {
     builder.registerJUCEFactories();
 
-    builder.registerFactory ("PianoRoll", &PianoRollItem::factory);
+    builder.registerFactory ("PianoRoll", &PianoRoll::factory);
     builder.registerFactory ("SearchBar", &SearchBar::factory);
 }
 

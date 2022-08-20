@@ -6,6 +6,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MidiFileListBox.h"
+#include "MidiSequence.h"
 //==============================================================================
 /**
 */
@@ -34,6 +35,7 @@ public:
 private:
     //==============================================================================
     MidiFileListBox *midiFileListBox;
+    MidiSequence *midiSequence;
     File midiFilesDir;
     AudioProcessorValueTreeState treeState;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)

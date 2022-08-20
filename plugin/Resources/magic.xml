@@ -93,7 +93,7 @@
     <View background-color="FF343541" class="panel" border-color="" margin="0"
           padding="0" border="" radius="" flex-grow="0.8" caption="Bottom"
           caption-size="0">
-      <PianoRoll background-color="FF4E505F" flex-align-self="stretch" flex-grow="1.0"/>
+      <PianoRoll background-color="FF4E505F" flex-align-self="stretch" flex-grow="1.0" source="sequence"/>
     </View>
   </View>
 </magic>

@@ -38,3 +38,7 @@ void PianoRollComponent::resized()
     gridComponent->setBounds(r);
     gridComponent->updateNoteLineRanges(static_cast<int>(keyboardComponent->getKeyStartPosition(0)));
 }
+
+void PianoRollComponent::setMidiSequence(MidiSequence *sequence) {
+    gridComponent->setMidiSequence(*sequence);
+}

@@ -8,5 +8,6 @@
 
 class MidiSequence: public Array<NoteRectangle> {
 public:
-
+    void load();
+    void save(File file);
 };

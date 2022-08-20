@@ -6,6 +6,7 @@
 #include "Constants.h"
 #include <iostream>
 #include <algorithm>
+#include <utility>
 
 GridComponent::GridComponent()
 {
@@ -201,4 +202,8 @@ NoteRectangle GridComponent::find_note_rect(Point<int> position) {
 
 
     return {x->getStart(), y->getStart(), x->getLength(), y->getLength(), index};
+}
+
+void GridComponent::setMidiSequence(MidiSequence sequence) {
+    notes = std::move(sequence);
 }
