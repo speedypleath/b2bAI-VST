@@ -5,12 +5,13 @@
 
 #include "JuceHeader.h"
 #include "NoteRectangle.h"
+#include "MidiSequence.h"
 
 class GridComponent: public Component {
 private:
     OwnedArray<Range<int>> noteLineRanges;
     OwnedArray<Range<int>> noteRowRanges;
-    std::list<NoteRectangle> notes;
+    MidiSequence notes;
     NoteRectangle pressed, new_position;
     NoteRectangle find_note_rect(Point<int> position);
 public:

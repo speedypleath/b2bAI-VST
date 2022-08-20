@@ -123,7 +123,7 @@ void GridComponent::mouseDown(const MouseEvent &event) {
         return;
 
     if(event.mods.isRightButtonDown()) {
-        notes.erase(found);
+        notes.remove(found);
         return;
     }
 
@@ -151,7 +151,7 @@ void GridComponent::mouseDrag(const juce::MouseEvent &event) {
 void GridComponent::mouseDoubleClick(const MouseEvent &event) {
     auto it = std::find(notes.begin(), notes.end(), pressed);
     if (it == notes.end())
-        notes.push_back(pressed);
+        notes.add(pressed);
     else {
         std::cout << "already pressed";
     }
@@ -173,14 +173,14 @@ void GridComponent::mouseUp(const MouseEvent &event) {
     if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor || getMouseCursor() == MouseCursor::RightEdgeResizeCursor)
         new_note = new_position;
 
-    if(getMouseCursor() == MouseCursor::DraggingHandCursor) {
+    if(getMouseCursor() == MouseCursor::DraggingHandCursor && event.mods.isLeftButtonDown()) {
        new_note = find_note_rect(Point<int>(new_position.getTopLeft()));
        new_note.setX(new_position.getX());
        new_note.setWidth(new_position.getWidth());
     }
 
-    notes.remove(pressed);
-    notes.push_back(new_note);
+    notes.removeIf([this](auto other) { return pressed == other; } );
+    notes.add(new_note);
 }
 
 NoteRectangle GridComponent::find_note_rect(Point<int> position) {

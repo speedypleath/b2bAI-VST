@@ -3,7 +3,10 @@
 //
 
 #pragma once
+#include "NoteRectangle.h"
+#include "JuceHeader.h"
 
-class MidiSequence {
+class MidiSequence: public Array<NoteRectangle> {
+public:
 
 };

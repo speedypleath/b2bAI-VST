@@ -24,7 +24,17 @@ public:
 
     bool operator!=(const NoteRectangle &rhs) const;
 
+    [[nodiscard]] int getStart() const;
+
+    void setStart(int start);
+
+    [[nodiscard]] int getEnd() const;
+
+    void setEnd(int end);
+
 private:
+    int start {};
+    int end {};
     int pitch{};
     int velocity{};
 public:
