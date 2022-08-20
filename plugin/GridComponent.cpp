@@ -169,7 +169,7 @@ void GridComponent::mouseUp(const MouseEvent &event) {
         return;
     }
 
-    Note new_note;
+    NoteRectangle new_note;
     if(getMouseCursor() == MouseCursor::LeftEdgeResizeCursor || getMouseCursor() == MouseCursor::RightEdgeResizeCursor)
         new_note = new_position;
 
@@ -183,7 +183,7 @@ void GridComponent::mouseUp(const MouseEvent &event) {
     notes.push_back(new_note);
 }
 
-Note GridComponent::find_note_rect(Point<int> position) {
+NoteRectangle GridComponent::find_note_rect(Point<int> position) {
     Range<int> *x = nullptr, *y = nullptr;
     for (auto range: noteRowRanges)
         if (range->contains(position.getX()))

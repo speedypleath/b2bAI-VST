@@ -28,10 +28,14 @@ set(B2BAI_SOURCES
         GridComponent.cpp
         PianoRollComponent.h
         PianoRollComponent.cpp
-        MIDIClip.cpp
-        MIDIClip.h
-        MIDIFileListBox.cpp
-        MIDIFileListBox.h
+        NoteRectangle.cpp
+        NoteRectangle.h
+        MidiFileListBox.cpp
+        MidiFileListBox.h
+        SearchBar.h
+        SearchBar.cpp
+        MidiSequence.cpp
+        MidiSequence.h
         )
 
 target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})

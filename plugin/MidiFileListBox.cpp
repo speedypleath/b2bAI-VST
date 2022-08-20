@@ -2,11 +2,11 @@
 // Created by Andrei Gheorghe on 19.08.2022.
 //
 
-#include "MIDIFileListBox.h"
+#include "MidiFileListBox.h"
 #include <iostream>
 #include <utility>
 
-MIDIFileListBox::MIDIFileListBox() {
+MidiFileListBox::MidiFileListBox() {
     midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
             .getChildFile (ProjectInfo::companyName)
             .getChildFile("midi_files");
@@ -18,15 +18,15 @@ MIDIFileListBox::MIDIFileListBox() {
     settings->addChangeListener(this);
 }
 
-MIDIFileListBox::~MIDIFileListBox() {
+MidiFileListBox::~MidiFileListBox() {
     settings->removeChangeListener (this);
 }
 
-void MIDIFileListBox::listBoxItemDoubleClicked(int rowNumber, const MouseEvent &event) {
+void MidiFileListBox::listBoxItemDoubleClicked(int rowNumber, const MouseEvent &event) {
     if (onDoubleClick)
         onDoubleClick (midiFiles[rowNumber]);
 }
-void MIDIFileListBox::paintListBoxItem(int rowNumber, Graphics &g, int width, int height, bool rowIsSelected) {
+void MidiFileListBox::paintListBoxItem(int rowNumber, Graphics &g, int width, int height, bool rowIsSelected) {
     auto bounds = juce::Rectangle<int> (0, 0, width, height);
     if (rowIsSelected)
     {
@@ -41,21 +41,22 @@ void MIDIFileListBox::paintListBoxItem(int rowNumber, Graphics &g, int width, in
     g.drawFittedText (midiFiles[rowNumber] != midiFilesDir.getParentDirectory() ? midiFiles[rowNumber].getFileName() : "..", bounds, juce::Justification::centredLeft, 1);
 }
 
-int MIDIFileListBox::getNumRows() {
-    return midiFilesDir.getNumberOfChildFiles(File::findFiles, "*.mid") + midiFilesDir.getNumberOfChildFiles(File::findDirectories, "*") + 1;
+int MidiFileListBox::getNumRows() {
+    return midiFilesDir.getNumberOfChildFiles(File::findFiles, searchText + "*.mid") + midiFilesDir.getNumberOfChildFiles(File::findDirectories, searchText+  "*") + 1;
 }
 
-void MIDIFileListBox::changeListenerCallback(juce::ChangeBroadcaster *) {
+void MidiFileListBox::changeListenerCallback(juce::ChangeBroadcaster *) {
     midiFilesDir = File(settings->settings.getProperty("path"));
+    searchText = settings->settings.getProperty("text").toString();
     std::cout << midiFilesDir.getFullPathName() << std::endl;
     midiFiles = {};
     midiFiles.add(midiFilesDir.getParentDirectory());
-    midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, "*"));
-    midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, "*.mid"));
-    sendChangeMessage();
+    midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, searchText + "*"));
+    midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, searchText + "*.mid"));
+    ChangeBroadcaster::sendChangeMessage();
 }
 
-void MIDIFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event) {
+void MidiFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event) {
     if (event.mods.isPopupMenu())
     {
         juce::PopupMenu::Options options;
@@ -71,4 +72,11 @@ void MIDIFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event)
 
     if (onSelectionChanged)
         onSelectionChanged (midiFiles[rowNumber]);
+}
+
+void MidiFileListBox::labelTextChanged(juce::Label *labelThatHasChanged) {
+    std::cout << "value changed: " << labelThatHasChanged->getText() << std::endl;
+    searchText = labelThatHasChanged->getText();
+    if (update)
+        update(searchText);
 }

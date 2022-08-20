@@ -6,19 +6,34 @@
 
 #include <utility>
 #include "PianoRollComponent.h"
+#include "SearchBar.h"
 
 //==============================================================================
 
 namespace IDs
 {
     static String paramSyncopation {"syncopation" };
-    static String paramDensity { "note density" };
-    static String paramBars { "number of bars" };
+    static String paramDensity { "density" };
+    static String paramBars { "bars" };
     static String paramScale { "scale" };
+    static String searchText { "search" };
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
-    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    AudioProcessorValueTreeState::ParameterLayout layout;
+
+    auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Attack",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Decay",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Sustain", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
+    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Release", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+
+    auto group = std::make_unique<juce::AudioProcessorParameterGroup>("adsr", "ADRS", "|",
+                                                                      std::move (attack),
+                                                                      std::move (decay),
+                                                                      std::move (sustain),
+                                                                      std::move (release));
+
+    layout.add (std::move (group));
     return layout;
 }
 
@@ -38,7 +53,21 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     else
         magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
 
-    midiFileListBox = magicState.createAndAddObject<MIDIFileListBox>("midi_files");
+
+    midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
+            .getChildFile (ProjectInfo::companyName)
+            .getChildFile("midi_files");
+
+    magicState.createAndAddObject<Array<NoteRectangle>>("sequence");
+
+    midiFileListBox = magicState.createAndAddObject<MidiFileListBox>("filetree");
+
+    auto search = magicState.getPropertyRoot().getOrCreateChildWithName("searchbar", nullptr);
+
+    midiFileListBox->update = [&](const String& text) {
+        updateListBox(text);
+    };
+
     midiFileListBox->onSelectionChanged = [&](File file) {
         loadMidiFile(std::move(file));
     };
@@ -55,9 +84,7 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
                                                    .getChildFile (ProjectInfo::companyName)
                                                    .getChildFile (ProjectInfo::projectName + juce::String (".settings")));
 
-    midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
-            .getChildFile (ProjectInfo::companyName)
-            .getChildFile("midi_files");
+    magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 
     magicState.setPlayheadUpdateFrequency (30);
 }
@@ -70,6 +97,7 @@ void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
     builder.registerJUCEFactories();
 
     builder.registerFactory ("PianoRoll", &PianoRollItem::factory);
+    builder.registerFactory ("SearchBar", &SearchBar::factory);
 }
 
 //==============================================================================
@@ -150,6 +178,10 @@ void B2bAIAudioProcessor::loadDirectory(const File& file) {
         magicState.getSettings().setProperty("path", file.getFullPathName(), nullptr);
         std::cout << "Directory: " << file.getFullPathName() << std::endl;
     }
+}
+
+void B2bAIAudioProcessor::updateListBox(const juce::String& text) {
+    magicState.getSettings().setProperty("text", text, nullptr);
 }
 
 File B2bAIAudioProcessor::getFile(int index) {

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "MIDIFileListBox.h"
+#include "MidiFileListBox.h"
 //==============================================================================
 /**
 */
@@ -27,12 +27,13 @@ public:
     void saveMidiFile();
     void loadMidiFile(File file);
     void loadDirectory(const File& file);
+    void updateListBox(const String& text);
     //==============================================================================
     double getTailLengthSeconds() const override;
 
 private:
     //==============================================================================
-    MIDIFileListBox *midiFileListBox;
+    MidiFileListBox *midiFileListBox;
     File midiFilesDir;
     AudioProcessorValueTreeState treeState;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)
