@@ -15,20 +15,19 @@
 
 namespace IDs
 {
-    static String paramSyncopation {"syncopation" };
-    static String paramDensity { "density" };
-    static String paramBars { "bars" };
-    static String paramScale { "scale" };
-    static String searchText { "search" };
+    static ParameterID paramSyncopation {"syncopation", 1 };
+    static ParameterID paramDensity { "density", 1 };
+    static ParameterID paramBars { "bars", 1 };
+    static ParameterID paramScale { "scale", 1 };
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Attack",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Decay",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Sustain", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
-    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Release", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Syncopation",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Note density",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Number of bars", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
+    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Scale", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
 
     auto group = std::make_unique<juce::AudioProcessorParameterGroup>("adsr", "ADRS", "|",
                                                                       std::move (attack),
@@ -71,8 +70,8 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
         updateListBox(text);
     };
 
-    midiFileListBox->onSelectionChanged = [&](File file) {
-        loadMidiFile(std::move(file));
+    midiFileListBox->onSelectionChanged = [&](const File& file) {
+        loadMidiFile(file);
     };
 
     midiFileListBox->onDoubleClick = [&](const File& file) {
@@ -167,18 +166,18 @@ double B2bAIAudioProcessor::getTailLengthSeconds() const
 }
 
 void B2bAIAudioProcessor::saveMidiFile() {
-    midiFilesDir.getChildFile("Midi " + juce::String (midiFileListBox->getNumRows() + 1) + ".mid").create();
-    magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
+    midiSequence->save(midiFilesDir);
 }
 
-void B2bAIAudioProcessor::loadMidiFile(File file) {
-
+void B2bAIAudioProcessor::loadMidiFile(const File& file) {
+    midiSequence->load(file);
 }
 
 void B2bAIAudioProcessor::loadDirectory(const File& file) {
     std::cout << "Change directory: " << file.getFullPathName() << std::endl;
     if(file.isDirectory()) {
         magicState.getSettings().setProperty("path", file.getFullPathName(), nullptr);
+        midiFilesDir = file;
         std::cout << "Directory: " << file.getFullPathName() << std::endl;
     }
 }

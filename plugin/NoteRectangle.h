@@ -8,8 +8,8 @@
 
 class NoteRectangle: public Rectangle<int> {
 public:
-    NoteRectangle(int x=0, int y=0, int width=0, int height=0, int pitch=0, int velocity=100);
-
+    NoteRectangle(int x=0, int y=0, int width=0, int height=0, int index=0);
+    NoteRectangle(int p, int v, double s, double e);
     [[nodiscard]] int getPitch() const;
 
     void setPitch(int pitch);
@@ -24,19 +24,24 @@ public:
 
     bool operator!=(const NoteRectangle &rhs) const;
 
-    [[nodiscard]] int getStart() const;
+    [[nodiscard]] double getStart() const;
 
-    void setStart(int start);
+    void setStart(double start);
 
-    [[nodiscard]] int getEnd() const;
+    [[nodiscard]] double getEnd() const;
 
-    void setEnd(int end);
+    void setEnd(double end);
+
+    [[nodiscard]] int getIndex() const;
+
+    void setIndex(int index);
 
 private:
-    int start {};
-    int end {};
+    double start {};
+    double end {};
     int pitch{};
     int velocity{};
+    int index{};
 public:
 
 };

@@ -8,6 +8,6 @@
 
 class MidiSequence: public Array<NoteRectangle> {
 public:
-    void load();
-    void save(File file);
+    void load(const File& file);
+    void save(const File& file);
 };

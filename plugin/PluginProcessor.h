@@ -26,7 +26,7 @@ public:
 #endif
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
     void saveMidiFile();
-    void loadMidiFile(File file);
+    void loadMidiFile(const File& file);
     void loadDirectory(const File& file);
     void updateListBox(const String& text);
     //==============================================================================

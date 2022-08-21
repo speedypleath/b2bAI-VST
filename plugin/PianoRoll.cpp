@@ -8,14 +8,12 @@ PianoRoll::PianoRoll(foleys::MagicGUIBuilder& builder, const juce::ValueTree& no
     : foleys::GuiItem(builder, node),
     pianoRoll(getMagicState().getKeyboardState(), juce::MidiKeyboardComponent::verticalKeyboardFacingRight) {
     setColourTranslation ({
-          { "note-colour", PianoRollComponent::noteColour                                },
-          { "white-note-colour", KeyboardComponent::whiteNoteColourId                    },
-          { "black-note-colour", KeyboardComponent::blackNoteColourId                    },
-          { "key-separator-line-colour", KeyboardComponent::keySeparatorLineColourId     },
-          { "mouse-overlay-key-colour", KeyboardComponent::mouseOverKeyOverlayColourId   },
-          { "key-down-overlay-colour", KeyboardComponent::keyDownOverlayColourId         },
-          { "test-label-colour", KeyboardComponent::textLabelColourId                    },
-          { "shadow-colour", KeyboardComponent::shadowColourId                           },
+          { "note-colour", PianoRollComponent::noteColour                                     },
+          { "white-note-color",      juce::MidiKeyboardComponent::whiteNoteColourId           },
+          { "black-note-color",      juce::MidiKeyboardComponent::blackNoteColourId           },
+          { "key-separator-line-color", juce::MidiKeyboardComponent::keySeparatorLineColourId },
+          { "mouse-over-color",      juce::MidiKeyboardComponent::mouseOverKeyOverlayColourId },
+          { "key-down-color",        juce::MidiKeyboardComponent::keyDownOverlayColourId      },
     });
 
     addAndMakeVisible(pianoRoll);
@@ -38,4 +36,4 @@ juce::Component* PianoRoll::getWrappedComponent() {
     return &pianoRoll;
 }
 
-const juce::Identifier  PianoRoll::pSource            { "source" };
+const juce::Identifier  PianoRoll::pSource { "source" };

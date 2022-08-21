@@ -31,25 +31,34 @@ void NoteRectangle::setVelocity(int v) {
     velocity = v;
 }
 
-NoteRectangle::NoteRectangle(int x, int y, int width, int height, int p, int v) : Rectangle<int>(x, y, width, height), start(x), end(y), pitch(p), velocity(v) { }
+NoteRectangle::NoteRectangle(int x, int y, int width, int height, int i) : Rectangle<int>(x, y, width, height), index(i) { }
+NoteRectangle::NoteRectangle(int p, int v, double s, double e) : start(s), end(e), pitch(p), velocity(v) { }
 
 std::ostream &operator<<(std::ostream &os, const NoteRectangle &note) {
     os << "start: " << note.getX() << " end: " << note.getRight() << " pitch: " << note.pitch << " velocity: " << note.velocity << " y: " << note.getY();
     return os;
 }
 
-int NoteRectangle::getStart() const {
+double NoteRectangle::getStart() const {
     return start;
 }
 
-void NoteRectangle::setStart(int s) {
-    NoteRectangle::start = s;
+void NoteRectangle::setStart(double s) {
+    start = s;
 }
 
-int NoteRectangle::getEnd() const {
+double NoteRectangle::getEnd() const {
     return end;
 }
 
-void NoteRectangle::setEnd(int e) {
+void NoteRectangle::setEnd(double e) {
     end = e;
+}
+
+int NoteRectangle::getIndex() const {
+    return index;
+}
+
+void NoteRectangle::setIndex(int i) {
+    index = i;
 }

@@ -67,10 +67,12 @@ void MidiFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event)
             file.isDirectory() ? file.deleteRecursively() : file.deleteFile();
             midiFiles.remove(rowNumber);
         });
+
         menu.showMenuAsync (options);
     }
 
-    if (onSelectionChanged)
+    File file = midiFiles[rowNumber];
+    if (onSelectionChanged && !file.isDirectory() && event.getNumberOfClicks() > 1)
         onSelectionChanged (midiFiles[rowNumber]);
 }
 
