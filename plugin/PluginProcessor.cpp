@@ -5,7 +5,6 @@
 #include "PluginProcessor.h"
 
 #include <utility>
-#include "PianoRollComponent.h"
 #include "MidiSequence.h"
 #include "SearchBar.h"
 #include "PianoRoll.h"
@@ -71,7 +70,7 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     };
 
     midiFileListBox->onSelectionChanged = [&](const File& file) {
-        loadMidiFile(file);
+//        loadMidiFile(file);
     };
 
     midiFileListBox->onDoubleClick = [&](const File& file) {

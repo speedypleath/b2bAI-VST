@@ -38,6 +38,7 @@ set(B2BAI_SOURCES
         MidiSequence.h
         PianoRoll.h
         PianoRoll.cpp
+        Note.h
         )
 
 target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})

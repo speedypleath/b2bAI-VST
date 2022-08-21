@@ -7,7 +7,11 @@
 #include "JuceHeader.h"
 
 class MidiSequence: public Array<NoteRectangle> {
+    double endTime;
 public:
     void load(const File& file);
+
+    double getEndTime() const;
+
     void save(const File& file);
 };

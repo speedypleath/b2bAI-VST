@@ -40,5 +40,5 @@ void PianoRollComponent::resized()
 }
 
 void PianoRollComponent::setMidiSequence(MidiSequence *sequence) {
-    gridComponent->setMidiSequence(*sequence);
+    gridComponent->setMidiSequence(sequence);
 }

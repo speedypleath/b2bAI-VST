@@ -5,10 +5,11 @@
 
 #include <ostream>
 #include "JuceHeader.h"
+#include "Note.h"
 
 class NoteRectangle: public Rectangle<int> {
 public:
-    NoteRectangle(int x=0, int y=0, int width=0, int height=0, int index=0);
+    NoteRectangle(int x=0, int y=0, int width=0, int height=0, int p=0);
     NoteRectangle(int p, int v, double s, double e);
     [[nodiscard]] int getPitch() const;
 
@@ -31,17 +32,6 @@ public:
     [[nodiscard]] double getEnd() const;
 
     void setEnd(double end);
-
-    [[nodiscard]] int getIndex() const;
-
-    void setIndex(int index);
-
 private:
-    double start {};
-    double end {};
-    int pitch{};
-    int velocity{};
-    int index{};
-public:
-
+    Note note;
 };

@@ -11,7 +11,6 @@ class PianoRollComponent: public Component, private juce::Timer {
 private:
     std::unique_ptr<KeyboardComponent> keyboardComponent;
     std::unique_ptr<GridComponent> gridComponent;
-    MidiSequence *midiSequence = nullptr;
     void timerCallback() override;
 public:
     enum ColourIds {

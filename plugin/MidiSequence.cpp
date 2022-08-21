@@ -16,14 +16,12 @@ void MidiSequence::load(const File& file) {
     FileInputStream stream(file);
 
     if(file.existsAsFile()) {
-        std::cout << stream.getStatus().getErrorMessage() << std::endl;
         jassert(stream.getStatus().wasOk());
 
         MidiFile midiFile;
         jassert(midiFile.readFrom(stream, true));
 
         auto numTracks = midiFile.getNumTracks();
-        std::cout << "Number of tracks: " << numTracks << std::endl;
         auto tracks = new MidiMessageSequence[static_cast<unsigned long>(numTracks)];
 
         for(int i = 0; i < numTracks; i++)
@@ -34,20 +32,17 @@ void MidiSequence::load(const File& file) {
         tracks[0].extractMidiChannelMessages(1, sequence, false);
         resize(sequence.getNumEvents());
         sequence.updateMatchedPairs();
+        endTime = sequence.getEndTime();
 
         std::transform(sequence.begin(), sequence.end(), begin(), [] (MidiMessageSequence::MidiEventHolder *event) {
-            std::cout << event->message.getDescription() << std::endl;
             return event->message.isNoteOn() ? NoteRectangle(
                         event->message.getNoteNumber(),
                         event->message.getVelocity(),
                         event->message.getTimeStamp(),
-                        event->noteOffObject->message.getTimeStamp()
-                    ) : NoteRectangle{};
+                        event->noteOffObject->message.getTimeStamp()) : NoteRectangle{};
         });
 
         removeIf([](NoteRectangle note) { return note.getPitch() == 0; });
-
-        std::for_each(begin(), end(), [](NoteRectangle note ) { std::cout << note << std::endl; } );
 
         delete[] tracks;
     }
@@ -55,4 +50,8 @@ void MidiSequence::load(const File& file) {
 
 void MidiSequence::save(const File& file) {
 
+}
+
+double MidiSequence::getEndTime() const {
+    return endTime;
 }

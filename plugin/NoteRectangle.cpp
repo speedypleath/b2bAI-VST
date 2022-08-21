@@ -5,22 +5,19 @@
 #include "NoteRectangle.h"
 
 int NoteRectangle::getPitch() const {
-    return pitch;
+    return note.pitch;
 }
 
 void NoteRectangle::setPitch(int p) {
-    pitch = p;
+    note.pitch = p;
 }
 
 int NoteRectangle::getVelocity() const {
-    return velocity;
+    return note.velocity;
 }
 
 bool NoteRectangle::operator==(const NoteRectangle &rhs) const {
-    return start == rhs.start &&
-           end == rhs.end &&
-           pitch == rhs.pitch &&
-           velocity == rhs.velocity;
+    return note == rhs.note;
 }
 
 bool NoteRectangle::operator!=(const NoteRectangle &rhs) const {
@@ -28,37 +25,34 @@ bool NoteRectangle::operator!=(const NoteRectangle &rhs) const {
 }
 
 void NoteRectangle::setVelocity(int v) {
-    velocity = v;
+    note.velocity = v;
 }
 
-NoteRectangle::NoteRectangle(int x, int y, int width, int height, int i) : Rectangle<int>(x, y, width, height), index(i) { }
-NoteRectangle::NoteRectangle(int p, int v, double s, double e) : start(s), end(e), pitch(p), velocity(v) { }
+NoteRectangle::NoteRectangle(int x, int y, int width, int height, int p) : Rectangle<int>(x, y, width, height), note(p, 100, x, y) { }
+NoteRectangle::NoteRectangle(int p, int v, double s, double e) : note(p, v, s, e) { }
+
+
 
 std::ostream &operator<<(std::ostream &os, const NoteRectangle &note) {
-    os << "start: " << note.getX() << " end: " << note.getRight() << " pitch: " << note.pitch << " velocity: " << note.velocity << " y: " << note.getY();
+    os << "start: " << note.getX() << " end: " << note.getRight() << " pitch: "
+       << note.getPitch() << " velocity: " << note.getVelocity() << " width: "
+       << note.getWidth() << " height: " << note.getHeight();
+
     return os;
 }
 
 double NoteRectangle::getStart() const {
-    return start;
+    return note.start;
 }
 
 void NoteRectangle::setStart(double s) {
-    start = s;
+    note.start = s;
 }
 
 double NoteRectangle::getEnd() const {
-    return end;
+    return note.end;
 }
 
 void NoteRectangle::setEnd(double e) {
-    end = e;
-}
-
-int NoteRectangle::getIndex() const {
-    return index;
-}
-
-void NoteRectangle::setIndex(int i) {
-    index = i;
+    note.end = e;
 }
