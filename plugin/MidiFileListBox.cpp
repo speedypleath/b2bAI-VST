@@ -5,13 +5,14 @@
 #include "MidiFileListBox.h"
 #include <iostream>
 #include <utility>
+#include "boost/log/trivial.hpp"
 
 MidiFileListBox::MidiFileListBox() {
     midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
             .getChildFile (ProjectInfo::companyName)
             .getChildFile("midi_files");
 
-    std::cout << midiFilesDir.getFullPathName() << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << midiFilesDir.getFullPathName() << std::endl;
     midiFiles.add(midiFilesDir.getParentDirectory());
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, "*"));
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findFiles, false, "*.mid"));
@@ -48,7 +49,7 @@ int MidiFileListBox::getNumRows() {
 void MidiFileListBox::changeListenerCallback(juce::ChangeBroadcaster *) {
     midiFilesDir = File(settings->settings.getProperty("path"));
     searchText = settings->settings.getProperty("text").toString();
-    std::cout << midiFilesDir.getFullPathName() << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << midiFilesDir.getFullPathName() << std::endl;
     midiFiles = {};
     midiFiles.add(midiFilesDir.getParentDirectory());
     midiFiles.addArray(midiFilesDir.findChildFiles(File::findDirectories, false, searchText + "*"));
@@ -77,7 +78,7 @@ void MidiFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event)
 }
 
 void MidiFileListBox::labelTextChanged(juce::Label *labelThatHasChanged) {
-    std::cout << "value changed: " << labelThatHasChanged->getText() << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << "value changed: " << labelThatHasChanged->getText() << std::endl;
     searchText = labelThatHasChanged->getText();
     if (update)
         update(searchText);

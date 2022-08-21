@@ -6,7 +6,8 @@
 #include "Constants.h"
 #include <iostream>
 #include <algorithm>
-#include <utility>
+#include <boost/log/trivial.hpp>
+namespace logging = boost::log;
 
 GridComponent::GridComponent()
 {
@@ -18,12 +19,14 @@ GridComponent::GridComponent()
 }
 
 int GridComponent::normalise(double v, double vMax) {
-    return static_cast<int>(v / vMax * getWidth());
+    double aux = v / vMax;
+    aux *= getWidth();
+    return static_cast<int>(aux);
 }
 
 void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
 {
-    std::cout << "update grid\n";
+    BOOST_LOG_TRIVIAL(debug) << "update grid\n";
     for (int i = 0; i <= 127; i++)
     {
         noteLineRanges[i]->setStart(getHeight() - firstKeyStartPosition - (i + 1) * constants::noteLineWidth);
@@ -42,9 +45,20 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
 
         int start = normalise(note.getStart(), notes->getEndTime());
         int end = normalise(note.getEnd(), notes->getEndTime());
-        note.setX(start);
-        note.setRight(end);
-        note.setWidth(end - start);
+
+        Range<int> startNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [start, this] (Range<int> *range) {
+            return range->getStart() > start - getWidth() / 64;
+        });
+
+        Range<int> endNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [end, this] (Range<int> *range) {
+            return range->getEnd() > end + getWidth() / 64 - getWidth() / 32;
+        });
+
+        note.setX(startNote.getStart());
+        note.setRight(endNote.getEnd());
+        note.setWidth(endNote.getEnd() - startNote.getStart());
+
+        BOOST_LOG_TRIVIAL(info) << note;
     }
 
     repaint();
@@ -163,7 +177,7 @@ void GridComponent::mouseDoubleClick(const MouseEvent &event) {
     if (it == notes->end())
         notes->add(pressed);
     else {
-        std::cout << "already pressed";
+        BOOST_LOG_TRIVIAL(info) << "already pressed";
     }
     pressed = {};
     new_position = {};

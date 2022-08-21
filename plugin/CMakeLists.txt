@@ -78,3 +78,17 @@ target_compile_definitions(${PROJECT_NAME}
         FOLEYS_SAVE_EDITED_GUI_IN_PLUGIN_STATE=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_WEB_BROWSER=0)
+
+find_package(Boost 1.79.0 REQUIRED COMPONENTS log)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${Boost_INCLUDE_DIR})
+
+message(STATUS "Boost include: " ${Boost_INCLUDE_DIR})
+
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
+        ${Boost_LIBRARIES} )
+
+add_definitions(${Boost_DEFINITIONS})
+
+message(STATUS "Boost libraries: " ${Boost_LIBRARY_DIRS})

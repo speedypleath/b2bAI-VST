@@ -9,9 +9,13 @@
 #include "SearchBar.h"
 #include "PianoRoll.h"
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
+
 //==============================================================================
-
-
+namespace logging = boost::log;
 namespace IDs
 {
     static ParameterID paramSyncopation {"syncopation", 1 };
@@ -56,21 +60,18 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 
 
     midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
-            .getChildFile (ProjectInfo::companyName)
-            .getChildFile("midi_files");
+            .getChildFile (ProjectInfo::companyName);
 
     midiSequence = magicState.createAndAddObject<MidiSequence>("sequence");
 
     midiFileListBox = magicState.createAndAddObject<MidiFileListBox>("filetree");
-
-    auto search = magicState.getPropertyRoot().getOrCreateChildWithName("searchbar", nullptr);
 
     midiFileListBox->update = [&](const String& text) {
         updateListBox(text);
     };
 
     midiFileListBox->onSelectionChanged = [&](const File& file) {
-//        loadMidiFile(file);
+        loadMidiFile(file);
     };
 
     midiFileListBox->onDoubleClick = [&](const File& file) {
@@ -88,6 +89,8 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 
     magicState.setPlayheadUpdateFrequency (30);
+
+    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 }
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
@@ -169,15 +172,16 @@ void B2bAIAudioProcessor::saveMidiFile() {
 }
 
 void B2bAIAudioProcessor::loadMidiFile(const File& file) {
-    midiSequence->load(file);
+    if(file.existsAsFile())
+        midiSequence->load(file);
 }
 
 void B2bAIAudioProcessor::loadDirectory(const File& file) {
-    std::cout << "Change directory: " << file.getFullPathName() << std::endl;
+
+    BOOST_LOG_TRIVIAL(info) << "Change directory: " << file.getFullPathName() << std::endl;
     if(file.isDirectory()) {
         magicState.getSettings().setProperty("path", file.getFullPathName(), nullptr);
         midiFilesDir = file;
-        std::cout << "Directory: " << file.getFullPathName() << std::endl;
     }
 }
 
