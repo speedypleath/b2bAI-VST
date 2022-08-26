@@ -11,7 +11,7 @@ class MidiSequence: public Array<NoteRectangle> {
 public:
     void load(const File& file);
 
-    double getEndTime() const;
+    [[nodiscard]] double getEndTime() const;
 
     void save(const File& file);
 };

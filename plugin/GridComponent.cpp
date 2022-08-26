@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/log/trivial.hpp>
+// #include "b2bAI/note.h"
+
 namespace logging = boost::log;
 
 GridComponent::GridComponent()
@@ -38,28 +40,29 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
         noteRowRanges[i]->setLength(getWidth() / 32);
     }
 
-    for (auto &note: *notes) {
-        note.setBottom(noteLineRanges[note.getPitch()]->getStart());
-        note.setY(noteLineRanges[note.getPitch()]->getEnd());
-        note.setHeight(noteLineRanges[note.getPitch()]->getLength());
+    if(notes)
+        for (auto &note: *notes) {
+            note.setBottom(noteLineRanges[note.getPitch()]->getStart());
+            note.setY(noteLineRanges[note.getPitch()]->getEnd());
+            note.setHeight(noteLineRanges[note.getPitch()]->getLength());
 
-        int start = normalise(note.getStart(), notes->getEndTime());
-        int end = normalise(note.getEnd(), notes->getEndTime());
+            int start = normalise(note.getStart(), notes->getEndTime());
+            int end = normalise(note.getEnd(), notes->getEndTime());
 
-        Range<int> startNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [start, this] (Range<int> *range) {
-            return range->getStart() > start - getWidth() / 64;
-        });
+            Range<int> startNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [start, this] (Range<int> *range) {
+                return range->getStart() > start - getWidth() / 64;
+            });
 
-        Range<int> endNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [end, this] (Range<int> *range) {
-            return range->getEnd() > end + getWidth() / 64 - getWidth() / 32;
-        });
+            Range<int> endNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [end, this] (Range<int> *range) {
+                return range->getEnd() > end + getWidth() / 64 - getWidth() / 32;
+            });
 
-        note.setX(startNote.getStart());
-        note.setRight(endNote.getEnd());
-        note.setWidth(endNote.getEnd() - startNote.getStart());
+            note.setX(startNote.getStart());
+            note.setRight(endNote.getEnd());
+            note.setWidth(endNote.getEnd() - startNote.getStart());
 
-        BOOST_LOG_TRIVIAL(info) << note;
-    }
+            BOOST_LOG_TRIVIAL(debug) << note;
+        }
 
     repaint();
 }
@@ -98,18 +101,21 @@ void GridComponent::paint(Graphics& g)
 
     // draw notes
     g.setColour(Colours::green);
-    for (const auto& note : *notes) {
-        if(pressed == note) {
-            g.fillRect(new_position.expanded(1));
-            continue;
-        }
+    if(notes)
+        for (const auto& note : *notes) {
+            if(pressed == note) {
+                g.fillRect(new_position.expanded(1));
+                continue;
+            }
 
-        g.fillRect(note);
-    }
+            g.fillRect(note);
+        }
 }
 
 void GridComponent::mouseMove(const MouseEvent &event) {
     auto cursor = find_note_rect(event.getPosition());
+    if(!notes)
+        return;
     auto it = std::find_if(notes->begin(), notes->end(), [cursor](auto a) {
         return !cursor.getIntersection(a).isEmpty();
     });
@@ -134,6 +140,8 @@ void GridComponent::mouseMove(const MouseEvent &event) {
 }
 
 void GridComponent::mouseDown(const MouseEvent &event) {
+    if(!notes)
+        return;
     pressed = find_note_rect(event.getPosition());
 
     if(getMouseCursor() == MouseCursor::PointingHandCursor)
@@ -157,6 +165,8 @@ void GridComponent::mouseDown(const MouseEvent &event) {
 }
 
 void GridComponent::mouseDrag(const juce::MouseEvent &event) {
+    if(!notes)
+        return;
     if(event.mouseWasDraggedSinceMouseDown()) {
         if(getMouseCursor() == MouseCursor::DraggingHandCursor) {
             new_position.setX(static_cast<int>(event.position.getX()) - pressed.getWidth() / 2);
@@ -173,6 +183,8 @@ void GridComponent::mouseDrag(const juce::MouseEvent &event) {
 }
 
 void GridComponent::mouseDoubleClick(const MouseEvent &event) {
+    if(!notes)
+        return;
     auto it = std::find(notes->begin(), notes->end(), pressed);
     if (it == notes->end())
         notes->add(pressed);
@@ -184,6 +196,8 @@ void GridComponent::mouseDoubleClick(const MouseEvent &event) {
 }
 
 void GridComponent::mouseUp(const MouseEvent &event) {
+    if(!notes)
+        return;
     if(getMouseCursor() == MouseCursor::NormalCursor && event.getNumberOfClicks() > 1)
         return;
 

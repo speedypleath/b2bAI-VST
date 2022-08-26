@@ -4,13 +4,12 @@
 
 #include "MidiSequence.h"
 #include <iostream>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
-template <typename Cont, typename Pred>
-Cont filter(const Cont &container, Pred predicate) {
-    Cont result;
-    std::copy_if(container.begin(), container.end(), std::back_inserter(result), predicate);
-    return result;
-}
+
+namespace logging = boost::log;
 
 void MidiSequence::load(const File& file) {
     FileInputStream stream(file);
@@ -49,7 +48,7 @@ void MidiSequence::load(const File& file) {
 }
 
 void MidiSequence::save(const File& file) {
-
+    // Save midi in python
 }
 
 double MidiSequence::getEndTime() const {

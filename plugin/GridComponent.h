@@ -11,7 +11,7 @@ class GridComponent: public Component {
 private:
     OwnedArray<Range<int>> noteLineRanges;
     OwnedArray<Range<int>> noteRowRanges;
-    MidiSequence *notes;
+    MidiSequence *notes = nullptr;
     NoteRectangle pressed, new_position;
     NoteRectangle find_note_rect(Point<int> position);
     int normalise(double w, double wMax);

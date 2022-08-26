@@ -20,8 +20,11 @@ namespace IDs
 {
     static ParameterID paramSyncopation {"syncopation", 1 };
     static ParameterID paramDensity { "density", 1 };
-    static ParameterID paramBars { "bars", 1 };
-    static ParameterID paramScale { "scale", 1 };
+    static ParameterID paramBars { "harmony", 1 };
+    static ParameterID paramScale { "roughness", 1 };
+    static ParameterID paramTempo { "tempo", 1 };
+    static ParameterID paramKey { "key", 1 };
+    static ParameterID paramMode { "mode", 1 };
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
@@ -29,8 +32,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
 
     auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Syncopation",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
     auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Note density",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Number of bars", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
-    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Scale", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
+    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Harmony", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
+    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Roughness", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
 
     auto group = std::make_unique<juce::AudioProcessorParameterGroup>("adsr", "ADRS", "|",
                                                                       std::move (attack),
@@ -38,6 +41,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
                                                                       std::move (sustain),
                                                                       std::move (release));
 
+    auto tempo = std::make_unique<juce::AudioParameterInt>(IDs::paramTempo, "Tempo", 10, 200, 120);
+    auto key = std::make_unique<AudioParameterChoice>(IDs::paramKey, "Key", StringArray {"A", "B", "C", "D", "F", "G"}, 1);
+    auto mode = std::make_unique<AudioParameterChoice>(IDs::paramMode, "Mode", StringArray {"Major", "Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Locrian"}, 1);
+    
+    auto scale = std::make_unique<juce::AudioProcessorParameterGroup>("scale", "Scale", "|",
+                                                                      std::move (tempo),
+                                                                      std::move (key),
+                                                                      std::move (mode));
+
+    layout.add(std::move (scale));
     layout.add (std::move (group));
     return layout;
 }
@@ -46,7 +59,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
 B2bAIAudioProcessor::B2bAIAudioProcessor()
         : treeState (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
-    FOLEYS_SET_SOURCE_PATH (__FILE__);
+    FOLEYS_SET_SOURCE_PATH (__FILE__)
+
+    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 
     auto resFile = File::getSpecialLocation (File::currentApplicationFile)
             .getChildFile ("Contents")
@@ -89,8 +104,6 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
 
     magicState.setPlayheadUpdateFrequency (30);
-
-    logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 }
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
