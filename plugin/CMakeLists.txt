@@ -85,8 +85,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 message(STATUS "Boost include: " ${Boost_INCLUDE_DIR})
 
+# find_library(NOTE_LIB midi_generator_ext.so PATHS ${CMAKE_BINARY_DIR}/lib/midi_generator/)
+
+# message(STATUS "NOTE_LIB: " ${NOTE_LIB})
+
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
-        ${Boost_LIBRARIES})
+        ${Boost_LIBRARIES})#NOTE_LIB)
 
 add_definitions(${Boost_DEFINITIONS})
 
