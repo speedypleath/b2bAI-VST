@@ -37,7 +37,7 @@ tar --bzip2 -xf boost_1_79_0.tar.bz2
 rm boost_1_79_0.tar.bz2
 cd boost_1_79_0
 
-./bootstrap.sh --prefix=/usr/
+./bootstrap.sh --prefix=/usr/~ --with-toolset=clang --with-python-version=3.10
 ./b2
 sudo ./b2 install
 ```
