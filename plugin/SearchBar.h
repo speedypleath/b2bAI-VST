@@ -24,7 +24,7 @@ public:
 
     void update() override;
 
-    [[nodiscard]] std::vector<foleys::SettableProperty> getSettableProperties() const override;
+    std::vector<foleys::SettableProperty> getSettableProperties() const override;
 
     juce::Component* getWrappedComponent() override;
 };

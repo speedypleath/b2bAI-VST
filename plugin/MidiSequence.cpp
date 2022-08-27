@@ -47,7 +47,7 @@ void MidiSequence::load(const File& file) {
     }
 }
 
-void MidiSequence::save(const File& file) {
+void MidiSequence::save(const File&) {
     // Save midi in python
 }
 

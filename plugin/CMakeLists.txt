@@ -38,7 +38,6 @@ set(B2BAI_SOURCES
         MidiSequence.h
         PianoRoll.h
         PianoRoll.cpp
-        Note.h
         )
 
 target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})
@@ -87,7 +86,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 message(STATUS "Boost include: " ${Boost_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
-        ${Boost_LIBRARIES} )
+        ${Boost_LIBRARIES})
 
 add_definitions(${Boost_DEFINITIONS})
 

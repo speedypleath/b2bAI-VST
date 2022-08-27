@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/log/trivial.hpp>
-// #include "b2bAI/note.h"
+#include "midi_generator/note.h"
 
 namespace logging = boost::log;
 

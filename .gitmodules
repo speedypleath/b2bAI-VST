@@ -1,6 +1,0 @@
-[submodule "JUCE"]
-	path = lib/JUCE
-	url = https://github.com/speedypleath/JUCE
-[submodule "foleys_gui_magic"]
-	path = lib/foleys_gui_magic
-	url = https://github.com/speedypleath/foleys_gui_magic

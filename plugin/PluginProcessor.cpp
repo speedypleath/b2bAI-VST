@@ -13,7 +13,6 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 
-
 //==============================================================================
 namespace logging = boost::log;
 namespace IDs
@@ -119,7 +118,7 @@ void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
 
 //==============================================================================
 
-void B2bAIAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock) {
+void B2bAIAudioProcessor::prepareToPlay (double, int) {
 
 }
 
