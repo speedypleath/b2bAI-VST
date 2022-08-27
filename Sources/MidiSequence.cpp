@@ -8,7 +8,6 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 
-
 namespace logging = boost::log;
 
 void MidiSequence::load(const File& file) {
@@ -48,7 +47,22 @@ void MidiSequence::load(const File& file) {
 }
 
 void MidiSequence::save(const File&) {
-    // Save midi in python
+    // Py_Initialize();
+    // object main_module = import("midi_generator.utils.output");
+    // object main_namespace = main_module.attr("__dict__");
+    // object save_midi = main_namespace["write_file"];
+    // try {
+    //     std::list<NoteRectangle> notes;
+    //     std::copy(begin(), end(), notes);
+    //     class_<std::list<int> >("list_int")
+    // .def("assign", &list_assign<int>)
+    // // ...
+    // ;
+    // } catch (error_already_set) {
+    //     PyErr_Print();
+
+    // }
+
 }
 
 double MidiSequence::getEndTime() const {
