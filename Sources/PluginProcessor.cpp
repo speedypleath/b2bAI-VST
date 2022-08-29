@@ -31,7 +31,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
 
     auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Syncopation",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
     auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Note density",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Harmony", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
+    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Consonance", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
     auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Roughness", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
 
     auto group = std::make_unique<juce::AudioProcessorParameterGroup>("adsr", "ADRS", "|",
@@ -94,6 +94,10 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 
     magicState.addTrigger("save_file", [this] {
         saveMidiFile();
+    });
+
+    magicState.addTrigger("generate", [this] {
+        midiSequence->generate();
     });
 
     magicState.setApplicationSettingsFile (juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)

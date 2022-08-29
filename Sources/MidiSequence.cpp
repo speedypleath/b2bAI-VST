@@ -7,6 +7,9 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+#include <midi_generator/API.h>
+#include <midi_generator/note.h>
+#include <list>
 
 namespace logging = boost::log;
 
@@ -44,6 +47,18 @@ void MidiSequence::load(const File& file) {
 
         delete[] tracks;
     }
+}
+
+void MidiSequence::generate() {
+    std::list<midi_generator::Note> notes = midi_generator::generate();
+
+    endTime = notes.back().end;
+
+    std::transform(notes.begin(), notes.end(), begin(), [] (midi_generator::Note note) {
+        std::cout<<note;
+        return NoteRectangle(note.pitch, note.velocity, note.start, note.end);
+    });
+    
 }
 
 void MidiSequence::save(const File&) {

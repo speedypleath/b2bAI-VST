@@ -10,6 +10,7 @@ class MidiSequence: public Array<NoteRectangle> {
     double endTime;
 public:
     void load(const File& file);
+    void generate();
 
     double getEndTime() const;
 

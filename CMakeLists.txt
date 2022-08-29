@@ -82,7 +82,7 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_WEB_BROWSER=0)
 
-find_package(Boost 1.79.0 REQUIRED COMPONENTS log)
+find_package(Boost 1.79.0 REQUIRED COMPONENTS log python310)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${Boost_INCLUDE_DIR})

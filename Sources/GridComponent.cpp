@@ -61,6 +61,8 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
             note.setRight(endNote.getEnd());
             note.setWidth(endNote.getEnd() - startNote.getStart());
 
+            std::cout<<note<<std::endl;
+
             BOOST_LOG_TRIVIAL(debug) << note;
         }
 
