@@ -56,11 +56,11 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
         )
 
-message(STATUS "Libraries: ${midi_generator_ext}")
+message(STATUS "Libraries: ${note}")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_data
-        midi_generator_ext
+        note
         foleys_gui_magic
         juce::juce_audio_basics
         juce::juce_audio_plugin_client

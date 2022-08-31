@@ -71,55 +71,49 @@
       <View flex-direction="column" display="tabbed" background-color="FF4E505F"
             border="0" caption="Configuration" padding="5">
         <View caption="Generate" caption-size="0" flex-direction="column" background-color="FF4E505F">
-          <View background-color="FF4E505F" radius="0" pos-x="0%" pos-y="0%"
-                pos-width="100%" pos-height="50%" class="panel" padding="" margin="">
-            <View flex-direction="row" class="nomargin panel">
-              <View class="panel" flex-direction="column">
-                <Slider caption="Tempo" parameter="tempo" slider-type="linear-horizontal"
-                        class="panel" pos-x="0%" pos-y="0%" pos-width="50%" pos-height="93.0556%"/>
-                <ToggleButton class="panel" text="Polyphonic" flex-align-self="stretch"/>
-              </View>
-              <View class="panel" flex-grow="0.7">
-                <Slider slider-type="linear-vertical" class="panel nomargin" min-value="-2"
-                        max-value="2"/>
-              </View>
-            </View>
-            <View class="panel">
-              <View flex-direction="column" class="nomargin panel" flex-align-self="stretch"
-                    flex-grow="1" display="flexbox" padding="10" caption="" flex-shrink="1"
-                    max-width="150">
-                <View class="nomargin panel">
-                  <Label class="panel nomargin" text="Steps" justification="centred-right"
-                         flex-grow="0.5" radius=""/>
-                  <ComboBox parameter="key" class="panel nomargin" flex-grow="1.0" flex-align-self="stretch"
-                            pos-y="" max-height="50" margin="2" radius=""/>
-                </View>
-                <View class="nomargin panel">
-                  <Label class="panel nomargin" text="Steps" justification="centred-right"
-                         flex-grow="0.5" radius=""/>
-                  <ComboBox parameter="key" class="panel nomargin" flex-grow="1.0" flex-align-self="stretch"
-                            pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"/>
-                </View>
-                <View class="nomargin panel" radius="0">
-                  <Label class="panel nomargin" text="Steps" justification="centred-right"
-                         flex-grow="0.5" radius=""/>
-                  <ComboBox parameter="key" class="panel nomargin" flex-grow="1.0" flex-align-self="stretch"
-                            pos-y="" max-height="50" margin="2" radius=""/>
-                </View>
-                <View class="nomargin panel">
-                  <Label class="panel nomargin" text="Steps" justification="centred-right"
-                         flex-grow="0.5" radius=""/>
-                  <ComboBox parameter="key" class="panel nomargin" flex-grow="1.0" flex-align-self="stretch"
-                            pos-y="" max-height="50" margin="2" radius=""/>
-                </View>
+          <View background-color="FF4E505F" pos-x="0%" pos-y="0%" pos-width="100%"
+                pos-height="50%" class="panel">
+            <Slider caption="Note density" class="panel" slider-type="rotary" parameter="density"
+                    max-width="200"/>
+            <Slider caption="Syncopation" class="panel" slider-type="rotary" parameter="syncopation"
+                    margin="" pos-width="250" pos-x="250" pos-y="-14" pos-height="168"
+                    max-width="200"/>
+            <View id="" class="nomargin panel" flex-direction="column" max-width="250">
+              <Slider caption="Tempo" parameter="tempo" slider-type="linear-horizontal"
+                      class="panel" pos-x="0.4%" pos-y="0%" pos-width="100%" pos-height="50%"/>
+              <View caption="Algorithms" class="nomargin panel" flex-direction="column"
+                    padding="10" pos-x="0%" pos-y="50%" pos-width="100%" pos-height="50%">
+                <ComboBox caption="Syncopation " caption-placement="centred-left" class="panel"
+                          caption-size="20" margin="2" parameter="syncopation-algorithm"/>
               </View>
             </View>
           </View>
-          <View margin="0" padding="0" radius="0" border="0" background-color="FF4E505F">
-            <Slider caption="Syncopation" class="panel" slider-type="rotary"/>
-            <Slider caption="Note density" class="panel" slider-type="rotary"/>
-            <Slider caption="Harmony" class="panel" slider-type="rotary"/>
-            <Slider caption="Roughness" class="panel" slider-type="rotary"/>
+          <View background-color="FF4E505F" class="panel">
+            <Slider caption="Consonance" class="panel" slider-type="rotary" parameter="harmony"
+                    pos-x="-1.27389%" pos-y="-6.75676%" pos-width="37.1975%" pos-height="100%"
+                    max-width="200"/>
+            <View caption="Length" class="nomargin panel" flex-direction="column"
+                  padding="10" max-width="200" display="flexbox">
+              <ComboBox caption="Bars " caption-placement="centred-left" class="panel"
+                        caption-size="20" margin="2" parameter="bars"/>
+              <ComboBox caption="Rate " caption-placement="centred-left" class="panel"
+                        caption-size="20" margin="2" parameter="rate"/>
+            </View>
+            <View flex-direction="column" class="nomargin panel" flex-align-self="stretch"
+                  flex-grow="1" display="flexbox" padding="10" caption="Scale"
+                  flex-shrink="1" max-width="200">
+              <ComboBox parameter="key" class="panel" flex-grow="1.0" flex-align-self="stretch"
+                        pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"
+                        caption="   Key " caption-size="20" caption-placement="centred-left"/>
+              <ComboBox parameter="mode" class="panel" flex-grow="1.0" flex-align-self="stretch"
+                        pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"
+                        caption="Mode " caption-size="20" caption-placement="centred-left"/>
+            </View>
+            <View class="panel" display="contents">
+              <TextButton flex-align-self="end" onClick="generate" text="Run" class="panel"
+                          caption-size="20" padding="0" radius="0" flex-grow="1.0" max-width="50"
+                          pos-x="14.0244%" pos-y="18.125%" pos-width="82.9268%" pos-height="49.375%"/>
+            </View>
           </View>
         </View>
         <View caption="Mutate" caption-size="0" flex-direction="column" background-color="FF4E505F">

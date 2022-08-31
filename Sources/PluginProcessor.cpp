@@ -19,38 +19,51 @@ namespace IDs
 {
     static ParameterID paramSyncopation {"syncopation", 1 };
     static ParameterID paramDensity { "density", 1 };
-    static ParameterID paramBars { "harmony", 1 };
-    static ParameterID paramScale { "roughness", 1 };
+    static ParameterID paramConsonance { "harmony", 1 };
     static ParameterID paramTempo { "tempo", 1 };
     static ParameterID paramKey { "key", 1 };
     static ParameterID paramMode { "mode", 1 };
+    static ParameterID paramBars { "bars", 1 };
+    static ParameterID paramRate { "rate", 1 };
+    static ParameterID paramSyncopationAlgorithm { "syncopation-algorithm", 1 };
+    static ParameterID paramFitnessAlgorithm { "fitness-algorithm", 1 };
+    static ParameterID paramMutationRate {"mutation-rate", 1};
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    auto attack  = std::make_unique<juce::AudioParameterFloat>(IDs::paramSyncopation,  "Syncopation",  juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto decay   = std::make_unique<juce::AudioParameterFloat>(IDs::paramDensity,   "Note density",   juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-    auto sustain = std::make_unique<juce::AudioParameterFloat>(IDs::paramBars, "Consonance", juce::NormalisableRange<float> (0.0f,   1.0f, 0.01f), 1.0f);
-    auto release = std::make_unique<juce::AudioParameterFloat>(IDs::paramScale, "Roughness", juce::NormalisableRange<float> (0.001f, 0.5f, 0.01f), 0.10f);
-
-    auto group = std::make_unique<juce::AudioProcessorParameterGroup>("adsr", "ADRS", "|",
-                                                                      std::move (attack),
-                                                                      std::move (decay),
-                                                                      std::move (sustain),
-                                                                      std::move (release));
+    auto syncopation  = std::make_unique<juce::AudioParameterInt>(IDs::paramSyncopation,  "Syncopation", 1, 100, 50);
+    auto density   = std::make_unique<juce::AudioParameterInt>(IDs::paramDensity,   "Note density",  1, 100, 50);
+    auto consonance = std::make_unique<juce::AudioParameterInt>(IDs::paramConsonance, "Consonance", 1, 100, 50);
 
     auto tempo = std::make_unique<juce::AudioParameterInt>(IDs::paramTempo, "Tempo", 10, 200, 120);
-    auto key = std::make_unique<AudioParameterChoice>(IDs::paramKey, "Key", StringArray {"A", "B", "C", "D", "F", "G"}, 1);
-    auto mode = std::make_unique<AudioParameterChoice>(IDs::paramMode, "Mode", StringArray {"Major", "Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Locrian"}, 1);
-    
-    auto scale = std::make_unique<juce::AudioProcessorParameterGroup>("scale", "Scale", "|",
+    auto key = std::make_unique<AudioParameterChoice>(IDs::paramKey, "Key", StringArray { "A", "B", "C", "D", "F", "G" }, 1);
+    auto mode = std::make_unique<AudioParameterChoice>(IDs::paramMode, "Mode", StringArray { "Major", "Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Locrian" }, 1);
+
+    auto bars = std::make_unique<AudioParameterChoice>(IDs::paramBars, "Bars", StringArray { "4", "8" }, 0);
+    auto rate = std::make_unique<AudioParameterChoice>(IDs::paramRate, "Rate", StringArray { "1", "1 / 2", "1 / 4", "1 / 8" }, 2);
+
+    auto syncopationAlgorithm = std::make_unique<AudioParameterChoice>(IDs::paramSyncopationAlgorithm, "Syncopation", StringArray { "WNBD", "Off-Beatness" }, 0);
+    auto fitnessAlgorithm = std::make_unique<AudioParameterChoice>(IDs::paramFitnessAlgorithm, "Fitness", StringArray { "Normal", "Kolmogorov"}, 0);
+    auto mutationRate = std::make_unique<juce::AudioParameterInt>(IDs::paramConsonance, "Mutation rate", 1, 100, 50);
+
+    auto generate = std::make_unique<juce::AudioProcessorParameterGroup>("generate", "generate", "|",
+                                                                      std::move (syncopation),
+                                                                      std::move (density),
+                                                                      std::move (consonance),
                                                                       std::move (tempo),
                                                                       std::move (key),
-                                                                      std::move (mode));
+                                                                      std::move (mode),
+                                                                      std::move (bars),
+                                                                      std::move (rate),
+                                                                      std::move (syncopationAlgorithm));
 
-    layout.add(std::move (scale));
-    layout.add (std::move (group));
+    auto mutate = std::make_unique<juce::AudioProcessorParameterGroup>("mutate", "mutate", "|",
+                                                                       std::move (mutationRate));
+
+    layout.add (std::move (generate));
+    layout.add (std::move (mutate));
     return layout;
 }
 
