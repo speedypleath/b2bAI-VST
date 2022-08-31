@@ -11,7 +11,10 @@
 #include <midi_generator/note.h>
 #include <list>
 
-namespace logging = boost::log;
+
+MidiSequence::~MidiSequence() {
+    pybind11::finalize_interpreter();
+}
 
 void MidiSequence::load(const File& file) {
     FileInputStream stream(file);
@@ -50,15 +53,18 @@ void MidiSequence::load(const File& file) {
 }
 
 void MidiSequence::generate() {
+    if(!initialised) {
+        pybind11::initialize_interpreter();
+        initialised = true;
+    }
     std::list<midi_generator::Note> notes = midi_generator::generate();
 
     endTime = notes.back().end;
 
     std::transform(notes.begin(), notes.end(), begin(), [] (midi_generator::Note note) {
-        std::cout<<note;
+        BOOST_LOG_TRIVIAL(info) << note;
         return NoteRectangle(note.pitch, note.velocity, note.start, note.end);
     });
-    
 }
 
 void MidiSequence::save(const File&) {

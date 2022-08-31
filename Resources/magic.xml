@@ -73,25 +73,24 @@
         <View caption="Generate" caption-size="0" flex-direction="column" background-color="FF4E505F">
           <View background-color="FF4E505F" pos-x="0%" pos-y="0%" pos-width="100%"
                 pos-height="50%" class="panel">
-            <Slider caption="Note density" class="panel" slider-type="rotary" parameter="density"
-                    max-width="200"/>
-            <Slider caption="Syncopation" class="panel" slider-type="rotary" parameter="syncopation"
-                    margin="" pos-width="250" pos-x="250" pos-y="-14" pos-height="168"
-                    max-width="200"/>
-            <View id="" class="nomargin panel" flex-direction="column" max-width="250">
+            <View id="" class="nomargin panel" flex-direction="column" max-width="250"
+                  flex-align-self="stretch">
               <Slider caption="Tempo" parameter="tempo" slider-type="linear-horizontal"
-                      class="panel" pos-x="0.4%" pos-y="0%" pos-width="100%" pos-height="50%"/>
+                      class="panel" pos-x="0%" pos-y="0%" pos-width="100%" pos-height="50%"/>
               <View caption="Algorithms" class="nomargin panel" flex-direction="column"
                     padding="10" pos-x="0%" pos-y="50%" pos-width="100%" pos-height="50%">
                 <ComboBox caption="Syncopation " caption-placement="centred-left" class="panel"
-                          caption-size="20" margin="2" parameter="syncopation-algorithm"/>
+                          caption-size="20" margin="2" parameter="syncopation-algorithm"
+                          pos-x="-4.34783%" pos-y="-68.1818%" pos-width="100%" pos-height="100%"/>
               </View>
             </View>
+            <Slider caption="Note density" class="panel nomargin" slider-type="rotary"
+                    parameter="density" max-width="150"/>
+            <Slider caption="Syncopation" class="panel nomargin" slider-type="rotary"
+                    parameter="syncopation" margin="" pos-width="250" pos-x="300"
+                    pos-y="-14" pos-height="168" max-width="150"/>
           </View>
           <View background-color="FF4E505F" class="panel">
-            <Slider caption="Consonance" class="panel" slider-type="rotary" parameter="harmony"
-                    pos-x="-1.27389%" pos-y="-6.75676%" pos-width="37.1975%" pos-height="100%"
-                    max-width="200"/>
             <View caption="Length" class="nomargin panel" flex-direction="column"
                   padding="10" max-width="200" display="flexbox">
               <ComboBox caption="Bars " caption-placement="centred-left" class="panel"
@@ -109,7 +108,10 @@
                         pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"
                         caption="Mode " caption-size="20" caption-placement="centred-left"/>
             </View>
-            <View class="panel" display="contents">
+            <Slider caption="Consonance" class="panel nomargin" slider-type="rotary"
+                    parameter="harmony" pos-x="-1.27389%" pos-y="-6.75676%" pos-width="37.1975%"
+                    pos-height="100%" max-width="150"/>
+            <View class="panel" display="contents" flex-grow="0.7">
               <TextButton flex-align-self="end" onClick="generate" text="Run" class="panel"
                           caption-size="20" padding="0" radius="0" flex-grow="1.0" max-width="50"
                           pos-x="14.0244%" pos-y="18.125%" pos-width="82.9268%" pos-height="49.375%"/>

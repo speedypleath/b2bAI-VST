@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <boost/log/trivial.hpp>
+#include <pybind11/embed.h>
 #include "midi_generator/note.h"
 
 namespace logging = boost::log;
@@ -48,24 +49,35 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
 
             int start = normalise(note.getStart(), notes->getEndTime());
             int end = normalise(note.getEnd(), notes->getEndTime());
+            BOOST_LOG_TRIVIAL(info) << "duration: " << start << " -> " << end;
 
-            Range<int> startNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [start, this] (Range<int> *range) {
-                return range->getStart() > start - getWidth() / 64;
-            });
 
-            Range<int> endNote = **std::find_if(noteRowRanges.begin(), noteRowRanges.end(), [end, this] (Range<int> *range) {
-                return range->getEnd() > end + getWidth() / 64 - getWidth() / 32;
-            });
+            Range<int> startNote;
+            for(auto rect: noteRowRanges) {
+                if(rect->getStart() > start - getWidth() / 64) {
+                    startNote = *rect;
+                    break;
+                }
+            }
+
+            BOOST_LOG_TRIVIAL(info) << "X-axis: " << startNote.getStart() << " -> " << startNote.getEnd();
+
+            Range<int> endNote;
+            for(auto rect: noteRowRanges) {
+                if(rect->getEnd() > end + getWidth() / 64 - getWidth() / 32) {
+                    endNote = *rect;
+                    break;
+                }
+            }
+
+            BOOST_LOG_TRIVIAL(info) << "Y-axis: " << endNote.getStart() << " -> " << endNote.getEnd();
 
             note.setX(startNote.getStart());
             note.setRight(endNote.getEnd());
             note.setWidth(endNote.getEnd() - startNote.getStart());
 
-            std::cout<<note<<std::endl;
-
-            BOOST_LOG_TRIVIAL(debug) << note;
+            BOOST_LOG_TRIVIAL(info) << note;
         }
-
     repaint();
 }
 

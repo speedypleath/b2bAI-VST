@@ -2,6 +2,8 @@
 // Created by Andrei Gheorghe on 18.08.2022.
 //
 
+#include <pybind11/embed.h>
+#include <boost/log/trivial.hpp>
 #include "NoteRectangle.h"
 
 int NoteRectangle::getPitch() const {
@@ -29,7 +31,9 @@ void NoteRectangle::setVelocity(int v) {
 }
 
 NoteRectangle::NoteRectangle(int x, int y, int width, int height, int p) : Rectangle<int>(x, y, width, height), note(p, 100, x, y) { }
-NoteRectangle::NoteRectangle(int p, int v, double s, double e) : note(p, v, s, e) { }
+NoteRectangle::NoteRectangle(int p, int v, double s, double e) : note(p, v, s, e) {
+    BOOST_LOG_TRIVIAL(info) << "build rectangle";
+}
 
 
 

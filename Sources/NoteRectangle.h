@@ -8,6 +8,7 @@
 #include "midi_generator/note.h"
 
 class NoteRectangle: public Rectangle<int> {
+    bool initialised = false;
 public:
     NoteRectangle(int x=0, int y=0, int width=0, int height=0, int p=0);
     NoteRectangle(int p, int v, double s, double e);

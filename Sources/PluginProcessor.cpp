@@ -8,6 +8,8 @@
 #include "MidiSequence.h"
 #include "SearchBar.h"
 #include "PianoRoll.h"
+#include "API.h"
+#include "pybind11/embed.h"
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -72,7 +74,6 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
         : treeState (*this, nullptr, "PARAMETERS", createParameterLayout())
 {
     FOLEYS_SET_SOURCE_PATH (__FILE__)
-
     logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
 
     auto resFile = File::getSpecialLocation (File::currentApplicationFile)
