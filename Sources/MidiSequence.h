@@ -11,9 +11,11 @@ class MidiSequence: public Array<NoteRectangle> {
     double endTime;
     bool initialised = false;
 public:
-
     ~MidiSequence();
     void load(const File& file);
+    void load_notes(std::list<midi_generator::Note> notes);
+
+    std::list<midi_generator::Note> to_notes();
     void generate();
 
     double getEndTime() const;

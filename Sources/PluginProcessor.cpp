@@ -28,8 +28,12 @@ namespace IDs
     static ParameterID paramBars { "bars", 1 };
     static ParameterID paramRate { "rate", 1 };
     static ParameterID paramSyncopationAlgorithm { "syncopation-algorithm", 1 };
-    static ParameterID paramFitnessAlgorithm { "fitness-algorithm", 1 };
-    static ParameterID paramMutationRate {"mutation-rate", 1};
+    static ParameterID paramPitch {"mutation-rate", 1};
+    static ParameterID paramSyncopationChange { "syncopation-change", 1 };
+    static ParameterID paramVelocity { "velocity", 1 };
+    static ParameterID paramCompression { "compression", 1 };
+    static ParameterID paramConsonanceMutate { "mutate-consonance", 1 };
+    static ParameterID paramCompressionCombine { "compression-combine", 1 };
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
@@ -47,8 +51,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     auto rate = std::make_unique<AudioParameterChoice>(IDs::paramRate, "Rate", StringArray { "1", "1 / 2", "1 / 4", "1 / 8" }, 2);
 
     auto syncopationAlgorithm = std::make_unique<AudioParameterChoice>(IDs::paramSyncopationAlgorithm, "Syncopation", StringArray { "WNBD", "Off-Beatness" }, 0);
-    auto fitnessAlgorithm = std::make_unique<AudioParameterChoice>(IDs::paramFitnessAlgorithm, "Fitness", StringArray { "Normal", "Kolmogorov"}, 0);
-    auto mutationRate = std::make_unique<juce::AudioParameterInt>(IDs::paramConsonance, "Mutation rate", 1, 100, 50);
 
     auto generate = std::make_unique<juce::AudioProcessorParameterGroup>("generate", "generate", "|",
                                                                       std::move (syncopation),
@@ -61,11 +63,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
                                                                       std::move (rate),
                                                                       std::move (syncopationAlgorithm));
 
-    auto mutate = std::make_unique<juce::AudioProcessorParameterGroup>("mutate", "mutate", "|",
-                                                                       std::move (mutationRate));
+    auto pitchRate = std::make_unique<juce::AudioParameterInt>(IDs::paramPitch, "Pitch change", 1, 100, 50);
+    auto durationRate = std::make_unique<juce::AudioParameterInt>(IDs::paramSyncopationChange, "Duration change", 1, 100, 50);
+    auto velocityRate = std::make_unique<juce::AudioParameterInt>(IDs::paramVelocity, "Velocity change", 1, 100, 50);
+    auto consonanceRate = std::make_unique<juce::AudioParameterInt>(IDs::paramConsonanceMutate, "Consonance rate", 1, 100, 50);
 
-    layout.add (std::move (generate));
-    layout.add (std::move (mutate));
+    auto mutate = std::make_unique<juce::AudioProcessorParameterGroup>("mutate", "mutate", "|",
+                                                                       std::move (pitchRate),
+                                                                       std::move (durationRate),
+                                                                       std::move (velocityRate),
+                                                                       std::move (consonanceRate));
+
+    auto compression = std::make_unique<juce::AudioParameterChoice>(IDs::paramCompression, "Compression algorithm", StringArray { "LZ77", "LZ78", "LZW"}, 0);
+    auto continueGroup = std::make_unique<juce::AudioProcessorParameterGroup>("continue", "continue", "|", std::move (compression));
+
+    auto compressionCombine = std::make_unique<juce::AudioParameterChoice>(IDs::paramCompressionCombine, "Compression algorithm", StringArray { "LZ77", "LZ78", "LZW"}, 0);
+    auto combine = std::make_unique<juce::AudioProcessorParameterGroup>("combine", "combine", "|", std::move (compressionCombine));
+    for (int i = 0; i < 8; i++)
+        combine->addChild(std::make_unique<juce::AudioParameterBool>(ParameterID("sequence" + std::to_string(8), 1), "Sequence " + std::to_string(8), false));
+
+    layout.add(std::move (generate));
+    layout.add(std::move (mutate));
+    layout.add(std::move (continueGroup));
+    layout.add(std::move (combine));
     return layout;
 }
 

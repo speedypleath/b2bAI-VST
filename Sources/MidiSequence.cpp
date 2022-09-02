@@ -3,7 +3,6 @@
 //
 
 #include "MidiSequence.h"
-#include <iostream>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -46,7 +45,7 @@ void MidiSequence::load(const File& file) {
                         event->noteOffObject->message.getTimeStamp()) : NoteRectangle{};
         });
 
-        removeIf([](NoteRectangle note) { return note.getPitch() == 0; });
+        removeIf([](const NoteRectangle& note) { return note.getPitch() == 0; });
 
         delete[] tracks;
     }
@@ -89,3 +88,22 @@ void MidiSequence::save(const File&) {
 double MidiSequence::getEndTime() const {
     return endTime;
 }
+
+std::list<midi_generator::Note> MidiSequence::to_notes() {
+    std::list<midi_generator::Note> notes;
+    std::for_each(begin(), end(), [&notes](const NoteRectangle& rect) {
+        notes.emplace_back(midi_generator::Note(rect.getPitch(), rect.getVelocity(), rect.getStart(), rect.getEnd()));
+    });
+    return notes;
+}
+
+void MidiSequence::load_notes(std::list<midi_generator::Note> notes) {
+    endTime = notes.back().end;
+
+    std::transform(notes.begin(), notes.end(), begin(), [] (midi_generator::Note note) {
+        BOOST_LOG_TRIVIAL(info) << note;
+        return NoteRectangle(note.pitch, note.velocity, note.start, note.end);
+    });
+}
+
+

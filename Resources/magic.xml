@@ -73,26 +73,29 @@
         <View caption="Generate" caption-size="0" flex-direction="column" background-color="FF4E505F">
           <View background-color="FF4E505F" pos-x="0%" pos-y="0%" pos-width="100%"
                 pos-height="50%" class="panel">
-            <View id="" class="nomargin panel" flex-direction="column" max-width="250"
-                  flex-align-self="stretch">
+            <View id="" class="nomargin panel" flex-direction="column" max-width="200"
+                  flex-align-self="stretch" display="contents" pos-x="-1.76056%"
+                  pos-y="-7.19424%" pos-width="44.0141%" pos-height="100%">
               <Slider caption="Tempo" parameter="tempo" slider-type="linear-horizontal"
-                      class="panel" pos-x="0%" pos-y="0%" pos-width="100%" pos-height="50%"/>
-              <View caption="Algorithms" class="nomargin panel" flex-direction="column"
-                    padding="10" pos-x="0%" pos-y="50%" pos-width="100%" pos-height="50%">
-                <ComboBox caption="Syncopation " caption-placement="centred-left" class="panel"
-                          caption-size="20" margin="2" parameter="syncopation-algorithm"
-                          pos-x="-4.34783%" pos-y="-68.1818%" pos-width="100%" pos-height="100%"/>
-              </View>
+                      class="panel" pos-x="3%" pos-y="0%" pos-width="90%" pos-height="57.554%"
+                      flex-grow="0.5" flex-shrink="2" border="0"/>
+              <ComboBox caption="Syncopation measurement" caption-placement="centred-top"
+                        class="panel" caption-size="20" margin="0" parameter="syncopation-algorithm"
+                        pos-x="10.5%" pos-y="55.3957%" pos-width="74.5%" pos-height="46.0432%"
+                        flex-grow="2.0"/>
             </View>
+            <View max-width="35" class="panel"/>
             <Slider caption="Note density" class="panel nomargin" slider-type="rotary"
                     parameter="density" max-width="150"/>
+            <View max-width="15" class="panel"/>
             <Slider caption="Syncopation" class="panel nomargin" slider-type="rotary"
                     parameter="syncopation" margin="" pos-width="250" pos-x="300"
                     pos-y="-14" pos-height="168" max-width="150"/>
           </View>
           <View background-color="FF4E505F" class="panel">
             <View caption="Length" class="nomargin panel" flex-direction="column"
-                  padding="10" max-width="200" display="flexbox">
+                  padding="10" max-width="200" display="flexbox" pos-x="-1.76056%"
+                  pos-y="-7.19424%" pos-width="35.2113%" pos-height="100%">
               <ComboBox caption="Bars " caption-placement="centred-left" class="panel"
                         caption-size="20" margin="2" parameter="bars"/>
               <ComboBox caption="Rate " caption-placement="centred-left" class="panel"
@@ -102,31 +105,77 @@
                   flex-grow="1" display="flexbox" padding="10" caption="Scale"
                   flex-shrink="1" max-width="200">
               <ComboBox parameter="key" class="panel" flex-grow="1.0" flex-align-self="stretch"
-                        pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"
-                        caption="   Key " caption-size="20" caption-placement="centred-left"/>
+                        pos-y="" max-height="50" margin="2" radius="" caption="   Key "
+                        caption-size="20" caption-placement="centred-left"/>
               <ComboBox parameter="mode" class="panel" flex-grow="1.0" flex-align-self="stretch"
-                        pos-y="" max-height="50" margin="2" radius="" combo-arrow="FF352626"
-                        caption="Mode " caption-size="20" caption-placement="centred-left"/>
+                        pos-y="" max-height="50" margin="2" radius="" caption="Mode "
+                        caption-size="20" caption-placement="centred-left"/>
             </View>
             <Slider caption="Consonance" class="panel nomargin" slider-type="rotary"
                     parameter="harmony" pos-x="-1.27389%" pos-y="-6.75676%" pos-width="37.1975%"
                     pos-height="100%" max-width="150"/>
-            <View class="panel" display="contents" flex-grow="0.7">
-              <TextButton flex-align-self="end" onClick="generate" text="Run" class="panel"
-                          caption-size="20" padding="0" radius="0" flex-grow="1.0" max-width="50"
-                          pos-x="14.0244%" pos-y="18.125%" pos-width="82.9268%" pos-height="49.375%"/>
-            </View>
           </View>
         </View>
-        <View caption="Mutate" caption-size="0" flex-direction="column" background-color="FF4E505F">
-          <Label value="searchbar:path"/>
+        <View caption="Mutate" caption-size="0" flex-direction="column" background-color="FF4E505F"
+              display="contents">
+          <Slider caption="Velocity" class="panel" slider-type="rotary" parameter="velocity"
+                  pos-x="45%" pos-y="5%" pos-width="25%" pos-height="48%" max-width="150"/>
+          <Slider caption="Consonance" class="panel" slider-type="rotary" parameter="mutate-consonance"
+                  pos-x="65%" pos-y="50%" pos-width="25%" pos-height="48%" max-width="150"/>
+          <Slider caption="Pitch" class="panel" slider-type="rotary" parameter="mutation-rate"
+                  pos-x="25%" pos-y="50%" pos-width="25%" pos-height="48%" max-width="150"/>
+          <Slider caption="Duration" class="panel" slider-type="rotary" parameter="syncopation-change"
+                  pos-x="5%" pos-y="5%" pos-width="25%" pos-height="48%" max-width="150"/>
         </View>
-        <View caption="Continue" caption-size="0" flex-direction="column" background-color="FF4E505F"/>
+        <View caption="Continue" caption-size="0" flex-direction="column" background-color="FF4E505F"
+              display="contents">
+          <View flex-direction="column" pos-x="-0.680272%" pos-y="-2.20126%"
+                pos-width="38.0952%" pos-height="30.1887%" flex-align-self="auto"
+                class="panel">
+            <Label pos-height="" pos-width="" pos-y="" pos-x="" text="Compression algorithm"
+                   font-size="16" justification="centred-bottom" class="panel"/>
+            <ComboBox class="panel nomargin" pos-x="" parameter="compression"/>
+          </View>
+        </View>
+        <View caption="Combine" caption-size="0" flex-direction="column" background-color="FF4E505F"
+              display="contents">
+          <View pos-x="0" pos-y="30%" pos-width="100%" pos-height="40%" caption="Sequences"
+                class="panel" flex-align-self="auto" display="contents">
+            <ToggleButton class="panel" text="" caption="1" caption-size="20" flex-align-self="stretch"
+                          caption-placement="centred-top" pos-x="2.5%" pos-y="0" pos-width="7.5%"
+                          pos-height="80%" max-height="10"/>
+            <ToggleButton class="panel" text="" caption="2" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="15%"
+                          pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="3" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="27.5%"
+                          pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="4" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="40%"
+                          pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="5" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-width="7.5%"
+                          pos-height="80%" max-width="45" pos-x="52.5%" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="6" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="65%"
+                          pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="7" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="77.5%"
+                          pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+            <ToggleButton class="panel" text="" caption="8" caption-size="20" max-height="65"
+                          flex-align-self="stretch" caption-placement="centred-top" pos-x="90%"
+                          pos-y="0" pos-width="7.5%" pos-height="80%" max-width="45"/>
+          </View>
+          <View flex-direction="column" pos-x="32.5%" pos-y="0" pos-width="40%"
+                pos-height="30%" flex-align-self="auto" class="panel" caption="Compression algorithm">
+            <ComboBox class="panel" pos-x="" parameter="compression"/>
+          </View>
+        </View>
       </View>
     </View>
     <View background-color="FF343541" class="panel nomargin" border-color=""
           flex-grow="0.8" caption="Bottom" caption-size="0" display="tabbed"
-          margin="0">
+          margin="0" flex-justify-content="" flex-align-items="" flex-align-content="">
       <PianoRoll caption="1" caption-size="0" background-color="FF4E505F" flex-align-self="stretch"
                  flex-grow="1.0" source="sequence" class="nomargin"/>
       <PianoRoll caption="2" caption-size="0" background-color="FF4E505F" flex-align-self="stretch"
@@ -141,7 +190,7 @@
                  flex-grow="1.0" source="sequence-6" class="nomargin"/>
       <PianoRoll caption="7" caption-size="0" background-color="FF4E505F" flex-align-self="stretch"
                  flex-grow="1.0" source="sequence-7" class="nomargin"/>
-      <PianoRoll caption="8" caption-size="0" background-color="FF4E505F" flex-align-self="stretch"
+      <PianoRoll caption="8" caption-size="0" background-color="FF4E505F" flex-align-self="end"
                  flex-grow="1.0" source="sequence-8" class="nomargin"/>
     </View>
   </View>
