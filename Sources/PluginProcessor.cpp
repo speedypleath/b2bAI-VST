@@ -80,7 +80,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     auto compressionCombine = std::make_unique<juce::AudioParameterChoice>(IDs::paramCompressionCombine, "Compression algorithm", StringArray { "LZ77", "LZ78", "LZW"}, 0);
     auto combine = std::make_unique<juce::AudioProcessorParameterGroup>("combine", "combine", "|", std::move (compressionCombine));
     for (int i = 0; i < 8; i++)
-        combine->addChild(std::make_unique<juce::AudioParameterBool>(ParameterID("sequence" + std::to_string(8), 1), "Sequence " + std::to_string(8), false));
+        combine->addChild(std::make_unique<juce::AudioParameterBool>(ParameterID("sequence" + std::to_string(i), 1), "Sequence " + std::to_string(i), false));
 
     layout.add(std::move (generate));
     layout.add(std::move (mutate));

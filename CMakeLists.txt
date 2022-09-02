@@ -60,7 +60,7 @@ message(STATUS "Libraries: ${note}")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_data
-        note
+        shared_library
         foleys_gui_magic
         juce::juce_audio_basics
         juce::juce_audio_plugin_client
