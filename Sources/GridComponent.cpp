@@ -4,11 +4,8 @@
 
 #include "GridComponent.h"
 #include "Constants.h"
-#include <iostream>
 #include <algorithm>
 #include <boost/log/trivial.hpp>
-#include <pybind11/embed.h>
-#include "midi_generator/note.h"
 
 namespace logging = boost::log;
 

@@ -6,8 +6,8 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#include <midi_generator/API.h>
-#include <midi_generator/note.h>
+#include <API.h>
+#include <note.h>
 #include <list>
 
 
