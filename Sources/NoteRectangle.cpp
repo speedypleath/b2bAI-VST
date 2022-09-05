@@ -32,7 +32,7 @@ void NoteRectangle::setVelocity(int v) {
 
 NoteRectangle::NoteRectangle(int x, int y, int width, int height, int p) : Rectangle<int>(x, y, width, height), note(p, 100, x, y) { }
 NoteRectangle::NoteRectangle(int p, int v, double s, double e) : note(p, v, s, e) {
-    BOOST_LOG_TRIVIAL(info) << "build rectangle";
+    BOOST_LOG_TRIVIAL(debug) << "build rectangle";
 }
 
 

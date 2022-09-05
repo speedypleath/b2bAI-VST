@@ -9,8 +9,7 @@
 #include "SearchBar.h"
 #include "PianoRoll.h"
 #include "RunButton.h"
-#include "API.h"
-#include "pybind11/embed.h"
+#include "Strings.h"
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -18,24 +17,6 @@
 
 //==============================================================================
 namespace logging = boost::log;
-namespace IDs
-{
-    static ParameterID paramSyncopation {"syncopation", 1 };
-    static ParameterID paramDensity { "density", 1 };
-    static ParameterID paramConsonance { "harmony", 1 };
-    static ParameterID paramTempo { "tempo", 1 };
-    static ParameterID paramKey { "key", 1 };
-    static ParameterID paramMode { "mode", 1 };
-    static ParameterID paramBars { "bars", 1 };
-    static ParameterID paramRate { "rate", 1 };
-    static ParameterID paramSyncopationAlgorithm { "syncopation-algorithm", 1 };
-    static ParameterID paramPitch {"mutation-rate", 1};
-    static ParameterID paramSyncopationChange { "syncopation-change", 1 };
-    static ParameterID paramVelocity { "velocity", 1 };
-    static ParameterID paramCompression { "compression", 1 };
-    static ParameterID paramConsonanceMutate { "mutate-consonance", 1 };
-    static ParameterID paramCompressionCombine { "compression-combine", 1 };
-}
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     AudioProcessorValueTreeState::ParameterLayout layout;
@@ -45,7 +26,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     auto consonance = std::make_unique<juce::AudioParameterInt>(IDs::paramConsonance, "Consonance", 1, 100, 50);
 
     auto tempo = std::make_unique<juce::AudioParameterInt>(IDs::paramTempo, "Tempo", 10, 200, 120);
-    auto key = std::make_unique<AudioParameterChoice>(IDs::paramKey, "Key", StringArray { "A", "B", "C", "D", "F", "G" }, 1);
+    auto key = std::make_unique<AudioParameterChoice>(IDs::paramKey, "Key", StringArray { "C", "D", "E", "F", "G", "A", "B" }, 1);
     auto mode = std::make_unique<AudioParameterChoice>(IDs::paramMode, "Mode", StringArray { "Major", "Minor", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Locrian" }, 1);
 
     auto bars = std::make_unique<AudioParameterChoice>(IDs::paramBars, "Bars", StringArray { "4", "8" }, 0);
@@ -140,8 +121,24 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
         auto run = magicState.getSettings().getProperty("run").toString();
         auto index = magicState.getSettings().getProperty("sequence").toString().getIntValue() - 1;
         BOOST_LOG_TRIVIAL(info) << run << " sequence " << index + 1;
-        if(run.equalsIgnoreCase("generate"))
-            sequences[index]->generate();
+
+        if(!initialised) {
+            pybind11::initialize_interpreter();
+            initialised = true;
+        }
+
+        if(run.equalsIgnoreCase("generate")) {
+            BOOST_LOG_TRIVIAL(info) << getConfiguration();
+            sequences[index]->load_notes(midi_generator::generate());
+        }
+
+        if(run.equalsIgnoreCase("mutate")) {
+            sequences[index]->load_notes(midi_generator::mutate(sequences[index]->to_notes()));
+        }
+
+        if(run.equalsIgnoreCase("continue")) {
+            sequences[index]->load_notes(midi_generator::continue_sequence(sequences[index]->to_notes()));
+        }
     });
 
 
@@ -227,8 +224,14 @@ double B2bAIAudioProcessor::getTailLengthSeconds() const
 }
 
 void B2bAIAudioProcessor::saveMidiFile() {
+    auto path = magicState.getSettings().getProperty("path").toString().toStdString();
+    path += '/';
+    auto file_name  = magicState.getSettings().getProperty("file_name").toString().toStdString();
+    path += file_name;
+    path += ".mid";
     auto index = magicState.getSettings().getProperty("sequence").toString().getIntValue() - 1;
-    sequences[index]->save(midiFilesDir);
+    BOOST_LOG_TRIVIAL(info) << "Save at path: " << path;
+    midi_generator::save_file(sequences[index]->to_notes(), path);
 }
 
 void B2bAIAudioProcessor::loadMidiFile(const File& file) {
@@ -272,6 +275,24 @@ File B2bAIAudioProcessor::getFile(int index) {
     return file;
 }
 
+midi_generator::Configuration B2bAIAudioProcessor::getConfiguration() {
+    midi_generator::Configuration configuration{};
+
+    configuration.syncopation = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramSyncopation.getParamID()))->get()) / 100;
+    configuration.density = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramDensity.getParamID()))->get()) / 100;
+    configuration.consonance = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramConsonance.getParamID()))->get()) / 100;
+
+    configuration.scale = midi_generator::Scale
+            (dynamic_cast<AudioParameterChoice *>(treeState.getParameter(IDs::paramKey.getParamID()))->getIndex(),
+             dynamic_cast<AudioParameterChoice *>(treeState.getParameter(IDs::paramKey.getParamID()))->getIndex());
+
+    configuration.bars = dynamic_cast<AudioParameterChoice *>(treeState.getParameter(IDs::paramBars.getParamID()))->getCurrentChoiceName().getIntValue();
+    juce::String rate = dynamic_cast<AudioParameterChoice *>(treeState.getParameter(IDs::paramRate.getParamID()))->getCurrentChoiceName();
+
+    configuration.rate = 1.f / (rate.indexOf("/") == -1 ? 1 : static_cast<float>(rate.getTrailingIntValue()));
+
+    return configuration;
+}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

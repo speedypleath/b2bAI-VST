@@ -79,6 +79,7 @@ void MidiFileListBox::listBoxItemClicked(int rowNumber, const MouseEvent &event)
 
 void MidiFileListBox::labelTextChanged(juce::Label *labelThatHasChanged) {
     BOOST_LOG_TRIVIAL(debug) << "value changed: " << labelThatHasChanged->getText() << std::endl;
+    settings->settings.setProperty("file_name", labelThatHasChanged->getText(), nullptr);
     searchText = labelThatHasChanged->getText();
     if (update)
         update(searchText);

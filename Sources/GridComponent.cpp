@@ -46,7 +46,7 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
 
             int start = normalise(note.getStart(), notes->getEndTime());
             int end = normalise(note.getEnd(), notes->getEndTime());
-            BOOST_LOG_TRIVIAL(info) << "duration: " << start << " -> " << end;
+            BOOST_LOG_TRIVIAL(debug) << "duration: " << start << " -> " << end;
 
 
             Range<int> startNote;
@@ -57,7 +57,7 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
                 }
             }
 
-            BOOST_LOG_TRIVIAL(info) << "X-axis: " << startNote.getStart() << " -> " << startNote.getEnd();
+            BOOST_LOG_TRIVIAL(debug) << "X-axis: " << startNote.getStart() << " -> " << startNote.getEnd();
 
             Range<int> endNote;
             for(auto rect: noteRowRanges) {
@@ -67,13 +67,13 @@ void GridComponent::updateNoteLineRanges(int firstKeyStartPosition)
                 }
             }
 
-            BOOST_LOG_TRIVIAL(info) << "Y-axis: " << endNote.getStart() << " -> " << endNote.getEnd();
+            BOOST_LOG_TRIVIAL(debug) << "Y-axis: " << endNote.getStart() << " -> " << endNote.getEnd();
 
             note.setX(startNote.getStart());
             note.setRight(endNote.getEnd());
             note.setWidth(endNote.getEnd() - startNote.getStart());
 
-            BOOST_LOG_TRIVIAL(info) << note;
+            BOOST_LOG_TRIVIAL(debug) << note;
         }
     repaint();
 }

@@ -6,14 +6,9 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#include <API.h>
 #include <note.h>
 #include <list>
 
-
-MidiSequence::~MidiSequence() {
-    pybind11::finalize_interpreter();
-}
 
 void MidiSequence::load(const File& file) {
     FileInputStream stream(file);
@@ -35,14 +30,16 @@ void MidiSequence::load(const File& file) {
         tracks[0].extractMidiChannelMessages(1, sequence, false);
         resize(sequence.getNumEvents());
         sequence.updateMatchedPairs();
-        endTime = sequence.getEndTime();
+        endTime = 16.0f;
 
-        std::transform(sequence.begin(), sequence.end(), begin(), [] (MidiMessageSequence::MidiEventHolder *event) {
+        auto aux = sequence.getEndTime();
+
+        std::transform(sequence.begin(), sequence.end(), begin(), [this, aux] (MidiMessageSequence::MidiEventHolder *event) {
             return event->message.isNoteOn() ? NoteRectangle(
                         event->message.getNoteNumber(),
                         event->message.getVelocity(),
-                        event->message.getTimeStamp(),
-                        event->noteOffObject->message.getTimeStamp()) : NoteRectangle{};
+                        normalise(event->message.getTimeStamp(), aux),
+                        normalise(event->noteOffObject->message.getTimeStamp(), aux)) : NoteRectangle{};
         });
 
         removeIf([](const NoteRectangle& note) { return note.getPitch() == 0; });
@@ -51,38 +48,9 @@ void MidiSequence::load(const File& file) {
     }
 }
 
-void MidiSequence::generate() {
-    if(!initialised) {
-        pybind11::initialize_interpreter();
-        initialised = true;
-    }
-    std::list<midi_generator::Note> notes = midi_generator::generate();
-
-    endTime = notes.back().end;
-
-    std::transform(notes.begin(), notes.end(), begin(), [] (midi_generator::Note note) {
-        BOOST_LOG_TRIVIAL(info) << note;
-        return NoteRectangle(note.pitch, note.velocity, note.start, note.end);
-    });
-}
-
-void MidiSequence::save(const File&) {
-    // Py_Initialize();
-    // object main_module = import("midi_generator.utils.output");
-    // object main_namespace = main_module.attr("__dict__");
-    // object save_midi = main_namespace["write_file"];
-    // try {
-    //     std::list<NoteRectangle> notes;
-    //     std::copy(begin(), end(), notes);
-    //     class_<std::list<int> >("list_int")
-    // .def("assign", &list_assign<int>)
-    // // ...
-    // ;
-    // } catch (error_already_set) {
-    //     PyErr_Print();
-
-    // }
-
+double MidiSequence::normalise(double v, double vMax) const {
+    double aux = v / vMax * endTime;
+    return aux;
 }
 
 double MidiSequence::getEndTime() const {
@@ -98,11 +66,10 @@ std::list<midi_generator::Note> MidiSequence::to_notes() {
 }
 
 void MidiSequence::load_notes(std::list<midi_generator::Note> notes) {
-    endTime = notes.back().end;
-
-    std::transform(notes.begin(), notes.end(), begin(), [] (midi_generator::Note note) {
+    clear();
+    std::for_each(notes.begin(), notes.end(), [this] (const midi_generator::Note& note){
         BOOST_LOG_TRIVIAL(info) << note;
-        return NoteRectangle(note.pitch, note.velocity, note.start, note.end);
+        this->add(NoteRectangle(note.pitch, note.velocity, note.start, note.end));
     });
 }
 

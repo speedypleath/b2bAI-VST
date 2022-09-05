@@ -4,9 +4,10 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "JuceHeader.h"
 #include "MidiFileListBox.h"
 #include "MidiSequence.h"
+#include "API.h"
 //==============================================================================
 /**
 */
@@ -33,12 +34,13 @@ public:
     double getTailLengthSeconds() const override;
 
 private:
-    //==============================================================================
     MidiFileListBox *midiFileListBox;
     OwnedArray<MidiSequence> sequences;
     File midiFilesDir;
     AudioProcessorValueTreeState treeState;
+    bool initialised = false;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)
     File getFile(int index);
     void initialiseBuilder(foleys::MagicGUIBuilder &builder) override;
+    midi_generator::Configuration getConfiguration();
 };
