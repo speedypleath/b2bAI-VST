@@ -8,6 +8,7 @@
 #include "MidiSequence.h"
 #include "SearchBar.h"
 #include "PianoRoll.h"
+#include "RunButton.h"
 #include "API.h"
 #include "pybind11/embed.h"
 
@@ -106,11 +107,16 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
     else
         magicState.setGuiValueTree (BinaryData::magic_xml, BinaryData::magic_xmlSize);
 
+    magicState.getSettings().setProperty("run", "generate", nullptr);
+    magicState.getSettings().setProperty("sequence", "1", nullptr);
 
     midiFilesDir = File::getSpecialLocation(File::userDocumentsDirectory)
             .getChildFile (ProjectInfo::companyName);
 
-    midiSequence = magicState.createAndAddObject<MidiSequence>("sequence");
+    for (int i = 1; i <= 8; i++) {
+        Identifier id("sequence-" + std::to_string(i));
+        sequences.add(magicState.createAndAddObject<MidiSequence>(id));
+    }
 
     midiFileListBox = magicState.createAndAddObject<MidiFileListBox>("filetree");
 
@@ -130,17 +136,20 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
         saveMidiFile();
     });
 
-    magicState.addTrigger("generate", [this] {
-        midiSequence->generate();
+    magicState.addTrigger("run", [this] {
+        auto run = magicState.getSettings().getProperty("run").toString();
+        auto index = magicState.getSettings().getProperty("sequence").toString().getIntValue() - 1;
+        BOOST_LOG_TRIVIAL(info) << run << " sequence " << index + 1;
+        if(run.equalsIgnoreCase("generate"))
+            sequences[index]->generate();
     });
+
 
     magicState.setApplicationSettingsFile (juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
                                                    .getChildFile (ProjectInfo::companyName)
                                                    .getChildFile (ProjectInfo::projectName + juce::String (".settings")));
 
     magicState.getSettings().setProperty("path", midiFilesDir.getFullPathName(), nullptr);
-
-    magicState.setPlayheadUpdateFrequency (30);
 }
 
 B2bAIAudioProcessor::~B2bAIAudioProcessor()
@@ -152,6 +161,7 @@ void B2bAIAudioProcessor::initialiseBuilder (foleys::MagicGUIBuilder& builder)
 
     builder.registerFactory ("PianoRoll", &PianoRoll::factory);
     builder.registerFactory ("SearchBar", &SearchBar::factory);
+    builder.registerFactory ("RunButton", &RunButton::factory);
 }
 
 //==============================================================================
@@ -160,8 +170,7 @@ void B2bAIAudioProcessor::prepareToPlay (double, int) {
 
 }
 
-void B2bAIAudioProcessor::releaseResources()
-{
+void B2bAIAudioProcessor::releaseResources() {
 }
 
 void B2bAIAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -218,12 +227,15 @@ double B2bAIAudioProcessor::getTailLengthSeconds() const
 }
 
 void B2bAIAudioProcessor::saveMidiFile() {
-    midiSequence->save(midiFilesDir);
+    auto index = magicState.getSettings().getProperty("sequence").toString().getIntValue() - 1;
+    sequences[index]->save(midiFilesDir);
 }
 
 void B2bAIAudioProcessor::loadMidiFile(const File& file) {
-    if(file.existsAsFile())
-        midiSequence->load(file);
+    if(file.existsAsFile()) {
+        auto index = magicState.getSettings().getProperty("sequence").toString().getIntValue() - 1;
+        sequences[index]->load(file);
+    }
 }
 
 void B2bAIAudioProcessor::loadDirectory(const File& file) {

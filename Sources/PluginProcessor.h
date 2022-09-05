@@ -35,7 +35,7 @@ public:
 private:
     //==============================================================================
     MidiFileListBox *midiFileListBox;
-    MidiSequence *midiSequence;
+    OwnedArray<MidiSequence> sequences;
     File midiFilesDir;
     AudioProcessorValueTreeState treeState;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (B2bAIAudioProcessor)

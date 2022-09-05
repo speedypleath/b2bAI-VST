@@ -38,6 +38,8 @@ set(B2BAI_SOURCES
         Sources/MidiSequence.h
         Sources/PianoRoll.h
         Sources/PianoRoll.cpp
+        Sources/RunButton.h
+        Sources/RunButton.cpp
         )
 
 target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})
