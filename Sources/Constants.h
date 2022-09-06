@@ -5,5 +5,5 @@
 
 namespace constants
 {
-    constexpr int noteLineWidth { 16 };
+    constexpr int noteLineWidth { 14 };
 }

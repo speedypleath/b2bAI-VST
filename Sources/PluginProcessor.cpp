@@ -129,7 +129,7 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
 
         if(run.equalsIgnoreCase("generate")) {
             BOOST_LOG_TRIVIAL(info) << getConfiguration();
-            sequences[index]->load_notes(midi_generator::generate());
+            sequences[index]->load_notes(midi_generator::generate(getConfiguration()));
         }
 
         if(run.equalsIgnoreCase("mutate")) {
