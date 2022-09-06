@@ -41,9 +41,10 @@ set(B2BAI_SOURCES
         Sources/RunButton.h
         Sources/RunButton.cpp
         Sources/Strings.h
+        Sources/API.cpp
         )
 
-target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES})
+target_sources(${PROJECT_NAME} PRIVATE ${B2BAI_SOURCES} "Sources/API.cpp")
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${B2BAI_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -63,7 +64,6 @@ message(STATUS "Libraries: ${note}")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         ${PROJECT_NAME}_data
-        shared_library
         foleys_gui_magic
         juce::juce_audio_basics
         juce::juce_audio_plugin_client
