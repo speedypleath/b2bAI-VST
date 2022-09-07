@@ -59,15 +59,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
     auto compression = std::make_unique<juce::AudioParameterChoice>(IDs::paramCompression, "Compression algorithm", StringArray { "LZ77", "LZ78", "LZW"}, 0);
     auto continueGroup = std::make_unique<juce::AudioProcessorParameterGroup>("continue", "continue", "|", std::move (compression));
 
-    auto compressionCombine = std::make_unique<juce::AudioParameterChoice>(IDs::paramCompressionCombine, "Compression algorithm", StringArray { "LZ77", "LZ78", "LZW"}, 0);
-    auto combine = std::make_unique<juce::AudioProcessorParameterGroup>("combine", "combine", "|", std::move (compressionCombine));
-    for (int i = 0; i < 8; i++)
-        combine->addChild(std::make_unique<juce::AudioParameterBool>(ParameterID("sequence" + std::to_string(i), 1), "Sequence " + std::to_string(i), false));
-
     layout.add(std::move (generate));
     layout.add(std::move (mutate));
     layout.add(std::move (continueGroup));
-    layout.add(std::move (combine));
     return layout;
 }
 
@@ -127,17 +121,26 @@ B2bAIAudioProcessor::B2bAIAudioProcessor()
             initialised = true;
         }
 
-        if(run.equalsIgnoreCase("generate")) {
-            BOOST_LOG_TRIVIAL(info) << getConfiguration();
-            sequences[index]->load_notes(midi_generator::generate(getConfiguration()));
-        }
+        BOOST_LOG_TRIVIAL(info) << getConfiguration();
 
-        if(run.equalsIgnoreCase("mutate")) {
-            sequences[index]->load_notes(midi_generator::mutate(sequences[index]->to_notes()));
-        }
+        if(run.equalsIgnoreCase("generate"))
+            sequences[index]->load_notes(midi_generator::generate(getConfiguration()));
+
+        if(run.equalsIgnoreCase("mutate"))
+            sequences[index]->load_notes(midi_generator::mutate(sequences[index]->to_notes(), getConfiguration()));
 
         if(run.equalsIgnoreCase("continue")) {
-            sequences[index]->load_notes(midi_generator::continue_sequence(sequences[index]->to_notes()));
+            sequences[index]->load_notes(midi_generator::continue_sequence(sequences[index]->to_notes(), getConfiguration()));
+        }
+
+        if(run.equalsIgnoreCase("combine")) {
+            auto seq = std::list<std::list<midi_generator::Note>>();
+            for (int i = 1; i <= 8; i++) {
+                if(bool(magicState.getPropertyAsValue("sequence:" + std::to_string(i)).getValue())) {
+                    seq.emplace_back(sequences[i - 1]->to_notes());
+                }
+            }
+            sequences[index]->load_notes(midi_generator::combine(seq, getConfiguration()));
         }
     });
 
@@ -290,6 +293,12 @@ midi_generator::Configuration B2bAIAudioProcessor::getConfiguration() {
     juce::String rate = dynamic_cast<AudioParameterChoice *>(treeState.getParameter(IDs::paramRate.getParamID()))->getCurrentChoiceName();
 
     configuration.rate = 1.f / (rate.indexOf("/") == -1 ? 1 : static_cast<float>(rate.getTrailingIntValue()));
+    configuration.syncopation_algorithm = static_cast<std::string>(dynamic_cast<AudioParameterChoice*>(treeState.getParameter(IDs::paramSyncopationAlgorithm.getParamID()))->getCurrentChoiceName().toStdString());
+    configuration.compression_method = static_cast<std::string>(dynamic_cast<AudioParameterChoice*>(treeState.getParameter(IDs::paramCompression.getParamID()))->getCurrentChoiceName().toStdString());
+
+    configuration.pitch_change_rate = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramPitch.getParamID()))->get()) / 100;
+    configuration.length_change_rate = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramSyncopationChange.getParamID()))->get()) / 100;
+    configuration.consonance_rate = static_cast<float>(dynamic_cast<AudioParameterInt *>(treeState.getParameter(IDs::paramConsonanceMutate.getParamID()))->get()) / 100;
 
     return configuration;
 }

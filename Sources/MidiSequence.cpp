@@ -62,6 +62,7 @@ std::list<midi_generator::Note> MidiSequence::to_notes() {
     std::for_each(begin(), end(), [&notes](const NoteRectangle& rect) {
         notes.emplace_back(midi_generator::Note(rect.getPitch(), rect.getVelocity(), rect.getStart(), rect.getEnd()));
     });
+    endTime = notes.back().end;
     return notes;
 }
 

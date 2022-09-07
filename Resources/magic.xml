@@ -92,7 +92,7 @@
               <View max-width="15" class="panel"/>
               <Slider caption="Syncopation" class="panel nomargin" slider-type="rotary"
                       parameter="syncopation" margin="" pos-width="250" pos-x="300"
-                      pos-y="-14" pos-height="168" max-width="150"/>
+                      pos-y="-14" pos-height="168" max-width="150" value="sequence:2"/>
             </View>
             <View background-color="FF4E505F" class="panel">
               <View caption="Length" class="nomargin panel" flex-direction="column"
@@ -145,28 +145,28 @@
                   class="panel" flex-align-self="auto" display="contents">
               <ToggleButton class="panel" text="" caption="1" caption-size="20" flex-align-self="stretch"
                             caption-placement="centred-top" pos-x="2.5%" pos-y="0" pos-width="7.5%"
-                            pos-height="80%" max-height="10"/>
+                            pos-height="80%" max-height="10" value="sequence:1"/>
               <ToggleButton class="panel" text="" caption="2" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="15%"
-                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y="" value="sequence:2"/>
               <ToggleButton class="panel" text="" caption="3" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="27.5%"
-                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y="" value="sequence:3"/>
               <ToggleButton class="panel" text="" caption="4" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="40%"
-                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y="" value="sequence:4"/>
               <ToggleButton class="panel" text="" caption="5" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-width="7.5%"
-                            pos-height="80%" max-width="45" pos-x="52.5%" pos-y=""/>
+                            pos-height="80%" max-width="45" pos-x="52.5%" pos-y="" value="sequence:5"/>
               <ToggleButton class="panel" text="" caption="6" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="65%"
-                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y="" value="sequence:6"/>
               <ToggleButton class="panel" text="" caption="7" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="77.5%"
-                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y=""/>
+                            pos-width="7.5%" pos-height="80%" max-width="45" pos-y="" value="sequence:7"/>
               <ToggleButton class="panel" text="" caption="8" caption-size="20" max-height="65"
                             flex-align-self="stretch" caption-placement="centred-top" pos-x="90%"
-                            pos-y="0" pos-width="7.5%" pos-height="80%" max-width="45"/>
+                            pos-y="0" pos-width="7.5%" pos-height="80%" max-width="45" value="sequence:8"/>
             </View>
             <View flex-direction="column" pos-x="32.5%" pos-y="0" pos-width="40%"
                   pos-height="30%" flex-align-self="auto" class="panel" caption="Compression algorithm">
